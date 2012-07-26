@@ -18,6 +18,7 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
+import android.content.Intent;
 import android.view.Display;
 
 
@@ -45,7 +46,7 @@ public class Splash extends SimpleBaseGameActivity{
 	private ITextureRegion mBugfullabsLogo;
 	private ITextureRegion mAndEngineLogo;
 	
-	private static final float SPLASH_DURATION = 1.0f;
+	private static final float SPLASH_DURATION = 0.3f;
 	
 	public EngineOptions onCreateEngineOptions() {
 
@@ -131,8 +132,8 @@ public class Splash extends SimpleBaseGameActivity{
 					break;
 					
 				case 6:
-					//Intent intent = new Intent(Splash.this, MainMenuActivity.class);
-					//Splash.this.startActivity(intent);
+					Intent intent = new Intent(Splash.this, MainMenuActivity.class);
+					Splash.this.startActivity(intent);
 					Splash.this.finish();
 					break;
 				}
@@ -143,10 +144,6 @@ public class Splash extends SimpleBaseGameActivity{
 		}));
 		
 
-		
-
-
-		
 		
 		
 		return this.mScene;
