@@ -1,7 +1,14 @@
 package com.bugfullabs.icemaze.level;
 
+import com.bugfullabs.icemaze.game.PlayerEntity;
 
-
+/**
+ * 
+ * @author Bugful Labs
+ * @author Wojciech Gruszka
+ * @email  wojciech@bugfullabs.pl
+ *
+ */
 
 
 public class Level{
@@ -12,6 +19,8 @@ public class Level{
 	private int id;
 	private int levelpackId;
 	private String levelTexture;
+	
+	private PlayerEntity player;
 	
 public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
@@ -33,7 +42,7 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		this.levelpackId = levelpackId;
 	}
 	
-	public void setItem(final int column, final int row, final int id){
+	public void addItem(final int column, final int row, final int id){
 		
 		if(!isCorrect(column, row)){
 			return;
@@ -56,7 +65,7 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 }
 
 	
-	public int getItemNumber(int column, int row)
+	public int getItem(int column, int row)
 	{
 		
 		if(!isCorrect(column, row)){
@@ -66,7 +75,7 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 	}
 
 	
-public int getLevelId() {
+	public int getId() {
 		
 		return id;
 	}
@@ -80,10 +89,20 @@ public int getLevelId() {
 	}	
 	
 	
+	public void setPlayer(PlayerEntity p){
+		player = p;
+	}
+	
+	public PlayerEntity getPlayer(){
+		return player;
+	}
+	
+	
 	private boolean isCorrect(int column, int row){
 		
 		return !(column < 0 || row < 0 || column >= width || row >= height);
 	}
+	
 	
 	
 }

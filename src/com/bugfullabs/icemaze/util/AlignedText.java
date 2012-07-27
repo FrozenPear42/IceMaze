@@ -30,7 +30,7 @@ public class AlignedText extends Text {
             
             this.screenWidth = (int) width;
             this.screenHeight = (int) height;
-            
+        
             this. alignText();
     }
     
@@ -62,7 +62,7 @@ public class AlignedText extends Text {
     }
 
     @Override
-    public void setText(String pText) {
+    public void setText(CharSequence pText) {
             super.setText(pText);
             alignText();
     }

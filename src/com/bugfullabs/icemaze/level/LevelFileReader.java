@@ -5,6 +5,15 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.andengine.ui.activity.BaseGameActivity;
 
+/**
+ * 
+ * @author Bugful Labs
+ * @author Wojciech Gruszka
+ * @email  wojciech@bugfullabs.pl
+ *
+ */
+
+
 public class LevelFileReader{
 	
 
