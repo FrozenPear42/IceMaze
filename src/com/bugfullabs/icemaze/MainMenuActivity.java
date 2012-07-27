@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Display;
+import android.view.KeyEvent;
 
 import com.bugfullabs.icemaze.level.Level;
 import com.bugfullabs.icemaze.level.LevelFileReader;
@@ -83,6 +84,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 
 	private int levelpackId = 1;
 
+	private boolean inStart = true;
+	
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -152,7 +155,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		new Button(this, mMainScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f, 250, 75, getString(R.string.newgame), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
-
+			inStart = false;
 			changeSceneWithFade(mGridScene, 0.2f);
 				
 			return true;
@@ -162,7 +165,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		new Button(this, mMainScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+75, 250, 75, getString(R.string.options), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
-			
+			inStart = false;
 			changeSceneWithFade(mOptionsScene, 0.3f);	
 				
 			return true;
@@ -216,6 +219,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		new Button(this, mOptionsScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+150, 250, 75, getString(R.string.reset), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
+				inStart = true;
 				changeSceneWithFade(mMainScene, 0.3f);	
 				return true;
 			}
@@ -299,14 +303,27 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	    }
 	
 	
-	
-	
-	
+	    @Override
+		public boolean onKeyDown(final int pKeyCode, final KeyEvent pEvent) {
+			if(pKeyCode == KeyEvent.KEYCODE_BACK  && pEvent.getAction() == KeyEvent.ACTION_DOWN) {
+				
+				if(!inStart){
+				changeSceneWithFade(mMainScene, 0.2f);	
+				inStart = true;
+				}else{
+				MainMenuActivity.this.finish();
+				}
+				
+				
+				return true;
+			}
+			return super.onKeyDown(pKeyCode, pEvent); 
+		}
+
 	
 	
 	
 	private void changeSceneWithFade(final Scene s, final float time){
-	
 	Scene cs = this.getEngine().getScene();
 
 	final Rectangle black = new Rectangle(0, 0, cameraWidth, cameraHeight, this.getVertexBufferObjectManager());
