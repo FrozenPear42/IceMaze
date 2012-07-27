@@ -1,5 +1,9 @@
 package com.bugfullabs.icemaze.level;
 
+import org.andengine.opengl.texture.region.TextureRegion;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
+
+import com.bugfullabs.icemaze.GameValues;
 import com.bugfullabs.icemaze.game.PlayerEntity;
 
 /**
@@ -21,6 +25,10 @@ public class Level{
 	private String levelTexture;
 	
 	private PlayerEntity player;
+	private int playerX;
+	private int playerY;
+	
+	
 	
 public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
@@ -33,7 +41,7 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		for (int i = 0; i < columns; i++){
 			for (int j = 0; j < rows; j++){				
-				level_pattern[i][j] = 0;
+				level_pattern[i][j] = GameValues.BLANK_ID;
 			}	
 		
 		}
@@ -88,9 +96,14 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		return this.levelTexture;
 	}	
 	
+	public void setPlayer(int x, int y){
+		this.playerX = x;
+		this.playerY = y;
+	}
 	
-	public void setPlayer(PlayerEntity p){
-		player = p;
+	
+	public void createPlayer(VertexBufferObjectManager vm, TextureRegion tx){
+		player = new PlayerEntity(vm, playerX*32, playerY*32, tx);
 	}
 	
 	public PlayerEntity getPlayer(){

@@ -63,6 +63,10 @@ public class LevelHandler extends DefaultHandler{
 				
 			}
 				
+			}else if(localName.equals("players")){
+				
+			}else if(localName.equals("player")){
+				level.setPlayer(Integer.parseInt(atts.getValue("column")), Integer.parseInt(atts.getValue("row")));
 			}
 		}
 		

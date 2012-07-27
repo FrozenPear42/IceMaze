@@ -17,13 +17,16 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.debug.Debug;
 import org.andengine.util.modifier.IModifier;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Display;
 
+import com.bugfullabs.icemaze.level.LevelFileReader;
 import com.bugfullabs.icemaze.util.Button;
 
 
@@ -117,6 +120,17 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			@Override
 			public boolean onButtonPressed(){	
 
+			try {
+
+			GameActivity.setLevel(LevelFileReader.getLevelFromFile(MainMenuActivity.this, "level_1_1"));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+				
+			Intent intent = new Intent(MainMenuActivity.this, GameActivity.class);
+			MainMenuActivity.this.startActivity(intent);
+			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+			
 			return true;
 			}
 		};

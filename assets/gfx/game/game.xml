@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<texture version="1" file="game.png" type="bitmap" width="128" height="128" pixelformat="RGBA_8888" minfilter="linear" magfilter="linear" wrapt="clamp" wraps="clamp" premultiplyalpha="false">
+    <!-- Created with TexturePacker http://texturepacker.com -->
+    <!--  -->
+    <textureregion id="0" src="0Player.png" x="2" y="2" width="32" height="32" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="32" srcheight="32"/>
+    <textureregion id="1" src="1step.png" x="36" y="36" width="32" height="32" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="32" srcheight="32"/>
+    <textureregion id="2" src="2step.png" x="70" y="2" width="32" height="32" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="32" srcheight="32"/>
+    <textureregion id="3" src="blank.png" x="36" y="2" width="32" height="32" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="32" srcheight="32"/>
+    <textureregion id="4" src="end.png" x="2" y="70" width="32" height="32" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="32" srcheight="32"/>
+    <textureregion id="5" src="solid.png" x="2" y="36" width="32" height="32" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="32" srcheight="32"/>
+</texture>
