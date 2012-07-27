@@ -19,5 +19,11 @@ public interface GameValues{
 	public static final int END_ID = 4;
 	public static final int SOLID_ID = 5;
 	
+	/* MAIN MENU */
+	
+	
+	public static final int BUTTONLONG_ID = 0;
+	public static final int BUTTONSHORT_ID = 1;
+	
 	
 }

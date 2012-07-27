@@ -57,7 +57,6 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	private Camera mCamera;
 	private Scene mGameScene;
-	private Scene mScoreScene;
 	private MenuScene mPauseScene;
 	
 	
@@ -127,7 +126,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		
 		//PAUSE BUTTON
-		mPauseButton = new Sprite(cameraWidth-24, 0, 24, 24, mMenuTextures.get(GameValues.PAUSE_ID), getVertexBufferObjectManager()){
+		mPauseButton = new Sprite(cameraWidth-32, 0, 32, 32, mMenuTextures.get(GameValues.PAUSE_ID), getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				if(pSceneTouchEvent.isActionUp()){
@@ -141,7 +140,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mGameScene.attachChild(mPauseButton);
 		
 		//RESTART BUTTON
-		mRestartButton = new Sprite(0, 0, 24, 24, mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){
+		mRestartButton = new Sprite(0, 0, 32, 32, mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				if(pSceneTouchEvent.isActionUp()){
@@ -155,6 +154,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mGameScene.attachChild(mRestartButton);
 		
 		
+		this.mGameScene.setTouchAreaBindingOnActionDownEnabled(true);
 		return mGameScene;
 	}
 	
