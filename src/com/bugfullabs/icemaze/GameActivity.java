@@ -64,6 +64,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private GameScene mGameScene;
 	private MenuScene mPauseScene;
 	
+	private int starCounter;
 	
 	private TexturePack mMenuTexturePack; 
 	private TexturePack mGameTexturePack; 
@@ -82,6 +83,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private SharedPreferences mSettings;
 	//private SharedPreferences.Editor mEditor;
 	private int steering;
+	
+	
 	
 	
 	/* BASE ENGINE & GAME FUNCTIONS */
@@ -334,6 +337,10 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		int col = player.getColumn();
 		int row = player.getRow();
+		int nCol = col;
+		int nRow = row;
+		
+		
 		int id = GameValues.BLANK_ID;
 		
 		switch(level.getItem(col, row)){
@@ -351,90 +358,49 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		switch(dir){
 		
 		case PlayerEntity.DIRECTION_UP:
-			if(level.getItem(col, row+1) != GameValues.SOLID_ID && 
-			   level.getItem(col, row+1) != GameValues.BLANK_ID){	
-			
-			player.move(dir);
-			
-			mGameScene.addItem(col, row, id);
-			
-			level.setItem(col, row, id);
-			
-			if(level.getItem(col, row+1) == GameValues.END_ID){
-				onEnd();
-			}
-			if(level.isStar(col, row+1)){
-			
-			}
-			}
-
-			
+			nRow = row+1;
 			break;
-		
+
 		case PlayerEntity.DIRECTION_DOWN:
-
-			if(level.getItem(col, row-1) != GameValues.SOLID_ID && 
-			   level.getItem(col, row-1) != GameValues.BLANK_ID ){	
+			nRow = row-1;
+			break;	
 			
-			player.move(dir);
-			
-			mGameScene.addItem(col, row, id);
-			
-			level.setItem(col, row, id);
-			
-			if(level.getItem(col, row-1) == GameValues.END_ID){
-				onEnd();
-			}
-			
-			}
-
-			
-			break;
-		
 		case PlayerEntity.DIRECTION_LEFT:
-			
-			if(level.getItem(col-1, row) != GameValues.SOLID_ID && 
-			   level.getItem(col-1, row) != GameValues.BLANK_ID ){
-			
-			player.move(dir);
-			
-			mGameScene.addItem(col, row, id);
-			
-			level.setItem(col, row, id);
-			
-			if(level.getItem(col-1, row) == GameValues.END_ID){
-				onEnd();
-			}
-			
-			}
-			
-			
-			break;
+			nCol = col-1;
+			break;	
 		
 		case PlayerEntity.DIRECTION_RIGHT:
-	
-			if(level.getItem(col+1, row) != GameValues.SOLID_ID && 
-			   level.getItem(col+1, row) != GameValues.BLANK_ID ){	
-			
-			player.move(dir);
-			
-			mGameScene.addItem(col, row, id);
-			
-			level.setItem(col, row, id);
-
-			if(level.getItem(col+1, row) == GameValues.END_ID){
-				onEnd();
-			}
-			
-			}
+			nCol = col+1;
+			break;	
 		
-			break;
-
-	
-		
+			
 		}
 		
+		
+		
+		if(level.getItem(nCol, nRow) != GameValues.SOLID_ID && 
+				   level.getItem(nCol, nRow) != GameValues.BLANK_ID){	
+				
+				player.move(dir);
+				
+				mGameScene.addItem(col, row, id);
+				
+				level.setItem(col, row, id);
+				
+				if(level.getItem(nCol, nRow) == GameValues.END_ID){
+					onEnd();
+				}
+				if(level.isStar(nCol, nRow)){
+				mGameScene.removeStar(level.getStarId(nCol, nRow));
+				//TODO: INCREASE STAR COUNTER
+				//TODO: CHECK IF EXIT CAN BE UNLOCKED
+				}
+				}
+	
 	}
+		
+		
+		
 	
 	
 	private void onEnd(){

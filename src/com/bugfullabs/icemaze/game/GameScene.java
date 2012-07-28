@@ -55,6 +55,10 @@ public class GameScene extends Scene{
 		this.sortChildren();
 	}
 	
+	public void removeStar(int id){
+		this.detachChild(mStars[id]);
+	}
+	
 	public void removeAllItems(){
 		
 		for(int i = 0; i < 3; i++){

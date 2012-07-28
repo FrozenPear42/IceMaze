@@ -149,6 +149,15 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		return stars[id][2] == 1;
 	}
 	
+	public int getStarId(int c, int r){
+		for(int i = 0; i < 3 ; i++){
+			if(stars[i][0] == c && stars[i][1] == r){
+				return i;
+				}
+			}
+		return -1;
+	}
+	
 	public void setStarCollected(int id, boolean col){
 		if(col)
 			stars[id][2] = 1;
@@ -160,8 +169,11 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		for(int i = 0; i < 3 ; i++){
 			if(stars[i][0] == c && stars[i][1] == r){
+				
+				if(!getStarCollected(i)){
 				setStarCollected(i, true);
 				return true;
+				}
 			}
 		}
 		
