@@ -1,5 +1,12 @@
 package com.bugfullabs.icemaze;
 
+/**
+ * 
+ * @author Bugful Labs
+ * @author Grushenko
+ * @email  wojciech@bugfullabs.pl
+ *
+ */
 
 
 public interface GameValues{
@@ -13,17 +20,23 @@ public interface GameValues{
 	
 	/* GAME */
 	public static final int PLAYER_ID = 0;
-	public static final int ONESTEP_ID = 1;
-	public static final int TWOSTEP_ID = 2;
-	public static final int BLANK_ID = 3;
-	public static final int END_ID = 4;
-	public static final int SOLID_ID = 5;
+	public static final int SOLID_ID = 1;
+	public static final int BLANK_ID = 2;
+	public static final int END_ID = 3;
+	public static final int END_UN_ID = 4;
+	public static final int FLAME_ID = 5;
+	public static final int ONESTEP_ID = 6;
+	public static final int TWOSTEP_ID = 7;
 	
 	/* MAIN MENU */
-	
-	
+
 	public static final int BUTTONLONG_ID = 0;
 	public static final int BUTTONSHORT_ID = 1;
+	
+	/* SHARED PREFS */
+	public static final String SETTINGS_FILE = "Settings";
+	public static final int STEERING_TOUCH = 0;
+	public static final int STEERING_SLIDE = 1;
 	
 	
 }

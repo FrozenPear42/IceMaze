@@ -67,7 +67,15 @@ public class LevelHandler extends DefaultHandler{
 				
 			}else if(localName.equals("player")){
 				level.setPlayer(Integer.parseInt(atts.getValue("column")), Integer.parseInt(atts.getValue("row")));
+			}else if(localName.equals("stars")){
+			
+			}else if(localName.equals("star")){
+			
+			level.addStar(Integer.parseInt(atts.getValue("id")) ,Integer.parseInt(atts.getValue("column")), Integer.parseInt(atts.getValue("row")));	
+				
 			}
+		
+			
 		}
 		
 

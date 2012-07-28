@@ -45,8 +45,8 @@ import com.bugfullabs.icemaze.util.Button;
 
 public class MainMenuActivity extends SimpleBaseGameActivity{
 
-	private int cameraWidth;
-	private int cameraHeight;
+	public static int cameraWidth;
+	public static int cameraHeight;
 	private Camera mCamera;
 
 	private Scene mMainScene;
@@ -60,7 +60,6 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	
 	SharedPreferences mSettings;
 	SharedPreferences.Editor mEditor;
-	private static final String SETTINGS_FILE = "Settings";
 	
 	private boolean mToogleSound = false;
 	private boolean mToogleMusic = false;
@@ -74,12 +73,15 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	
 	
 	/* LEVEL GRID */
-	private static final int NUMBER_OF_ITEMS = 15;
-	private static final int NUMBER_OF_ITEMS_IN_ROW = 5;
-	private static final float offsetX = 72;
-	private static final float offsetY = 72;
-	private float marginX;
-	private float marginY;
+	public static final int NUMBER_OF_ITEMS = 15;
+	public static final int NUMBER_OF_ITEMS_IN_ROW = 5;
+	
+	public static final float offsetX = 72;
+	public static final float offsetY = 72;
+	
+	public static float marginX;
+	public static float marginY;
+	
 	private Scene mGridScene;
 
 	private int levelpackId = 1;
@@ -87,33 +89,32 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	private boolean inStart = true;
 	
 
+	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		
 		Display disp = getWindowManager().getDefaultDisplay();
 		
-		this.cameraWidth = disp.getWidth();
-		this.cameraHeight = disp.getHeight();
+		MainMenuActivity.cameraWidth = disp.getWidth();
+		MainMenuActivity.cameraHeight = disp.getHeight();
 		
 		marginX = cameraWidth/2 - ((offsetX)*(NUMBER_OF_ITEMS_IN_ROW/2));
-		marginY = cameraHeight/2 - (((offsetY)*((NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW)/2))) + offsetY + 16;
+		marginY = cameraHeight/2 - (((offsetY)*((NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW)/2)));
 		
-		mSettings = getSharedPreferences(SETTINGS_FILE, 0);
+		mSettings = getSharedPreferences(GameValues.SETTINGS_FILE, 0);
 		mEditor = mSettings.edit();
 		
 		mToogleSound = mSettings.getBoolean("sound", false);
 		mToogleMusic = mSettings.getBoolean("music", false);		
 
-		this.mCamera = new Camera(0, 0, this.cameraWidth, this.cameraHeight);
+		this.mCamera = new Camera(0, 0, MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight);
 		
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(this.cameraWidth, this.cameraHeight), this.mCamera);
+		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight), this.mCamera);
 	}
 
 	@Override
 	protected void onCreateResources() {
 
-
-		
 		
 		this.mFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         Typeface typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
@@ -129,10 +130,12 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			e.printStackTrace();
 		}
         
-        TexturePackTextureRegion textureRegion = mTextures.get(GameValues.BUTTONLONG_ID);
-        mButtonLongRegion = TiledTextureRegion.create(mTexturePack.getTexture(), textureRegion.getSourceX(), textureRegion.getSourceY(), textureRegion.getSourceWidth(), textureRegion.getSourceHeight(), 2, 1);
+       
         TexturePackTextureRegion shortTextureRegion = mTextures.get(GameValues.BUTTONSHORT_ID);
         mButtonShortRegion = TiledTextureRegion.create(mTexturePack.getTexture(), shortTextureRegion.getSourceX(), shortTextureRegion.getSourceY(), shortTextureRegion.getSourceWidth(), shortTextureRegion.getSourceHeight(), 2, 1);
+       
+        TexturePackTextureRegion textureRegion = mTextures.get(GameValues.BUTTONLONG_ID);
+        mButtonLongRegion = TiledTextureRegion.create(mTexturePack.getTexture(), textureRegion.getSourceX(), textureRegion.getSourceY(), textureRegion.getSourceWidth(), textureRegion.getSourceHeight(), 2, 1);
         
      
         mFontTexture.load();
@@ -148,7 +151,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		this.mOptionsScene = new Scene();
 		mOptionsScene.setBackground(new Background(0.54f, 0.92f, 0.33f));
 		
-		
+
 		setLevelSelectGrid();
 		
 		
@@ -157,7 +160,6 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			public boolean onButtonPressed(){	
 			inStart = false;
 			changeSceneWithFade(mGridScene, 0.2f);
-				
 			return true;
 			}
 		};
@@ -253,7 +255,6 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  	//bg.setHeight(cameraHeight);
 	  	//mGridScene.setBackground(new SpriteBackground(bg));
 	  	mGridScene.setBackground(new Background(0.654f, 0.312f, 0.73f));
-	  	
 
 
 	  	  int i = 0;
@@ -308,6 +309,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			if(pKeyCode == KeyEvent.KEYCODE_BACK  && pEvent.getAction() == KeyEvent.ACTION_DOWN) {
 				
 				if(!inStart){
+
 				changeSceneWithFade(mMainScene, 0.2f);	
 				inStart = true;
 				}else{

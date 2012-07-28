@@ -11,6 +11,7 @@ import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.entity.modifier.FadeOutModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.andengine.entity.primitive.Rectangle;
+import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
@@ -29,11 +30,15 @@ import org.andengine.util.texturepack.TexturePackLoader;
 import org.andengine.util.texturepack.TexturePackTextureRegionLibrary;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.KeyEvent;
 
+import com.bugfullabs.icemaze.game.GameScene;
+import com.bugfullabs.icemaze.game.PlayerEntity;
 import com.bugfullabs.icemaze.level.Level;
+import com.bugfullabs.icemaze.level.LevelFileReader;
 import com.bugfullabs.icemaze.level.LevelSceneFactory;
 
 
@@ -46,7 +51,7 @@ import com.bugfullabs.icemaze.level.LevelSceneFactory;
  */
 
 
-public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemClickListener{
+public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemClickListener, IOnSceneTouchListener{
 
 	private static final int MENU_RESET = 0;
 	private static final int MENU_MAIN = 1;
@@ -56,7 +61,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private int cameraWidth = 800;
 	
 	private Camera mCamera;
-	private Scene mGameScene;
+	private GameScene mGameScene;
 	private MenuScene mPauseScene;
 	
 	
@@ -74,6 +79,12 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	private static Level level;
 
+	private SharedPreferences mSettings;
+	//private SharedPreferences.Editor mEditor;
+	private int steering;
+	
+	
+	/* BASE ENGINE & GAME FUNCTIONS */
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -118,12 +129,18 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	@Override
 	protected Scene onCreateScene() {
 		
+		/* SHARED PREFS CONFIG */
+		mSettings = getSharedPreferences(GameValues.SETTINGS_FILE, 0);
+		//mEditor = mSettings.edit();
+		
+		this.steering = mSettings.getInt("steering", GameValues.STEERING_TOUCH);
+		
+		
+		/* MENU SCENE */
+		createMenuScene();	
+		
 		/* GAME SCENE */
 		mGameScene = LevelSceneFactory.createScene(this, level, mGameTexturePack);
-		
-		createMenuScene();
-		
-		
 		
 		//PAUSE BUTTON
 		mPauseButton = new Sprite(cameraWidth-32, 0, 32, 32, mMenuTextures.get(GameValues.PAUSE_ID), getVertexBufferObjectManager()){
@@ -136,6 +153,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			return false;
 			}
 		};
+		mPauseButton.setZIndex(10);
 		mGameScene.registerTouchArea(mPauseButton);
 		mGameScene.attachChild(mPauseButton);
 		
@@ -145,14 +163,16 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				if(pSceneTouchEvent.isActionUp()){
 					//ON Restart
-					
+					onGameRestart();
 				}
 			return false;
 			}
 		};
+		mRestartButton.setZIndex(10);
 		mGameScene.registerTouchArea(mRestartButton);
 		mGameScene.attachChild(mRestartButton);
 		
+		mGameScene.setOnSceneTouchListener(this);
 		
 		this.mGameScene.setTouchAreaBindingOnActionDownEnabled(true);
 		return mGameScene;
@@ -161,11 +181,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	
 	
-	
-	
-
-	
-	
+	/* MENU */
 	
 	protected void createMenuScene() {
 
@@ -200,7 +216,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			
 			break;
 		case MENU_RESET:
-			
+			onGameRestart();
+			doResume();
 			break;
 			
 		case MENU_RESUME:
@@ -237,11 +254,207 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		this.mPauseScene.reset();
 	}
 	
+	
+	/* STATICS */
+	
+	
 	public static void setLevel(Level lvl){
 		level = lvl;
 	}
 	
 	
+	
+	
+	/* GAME STEERING */
+	
+	
+	@Override
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent touchEvent) {
+
+		switch(steering){
+		
+		
+		case GameValues.STEERING_TOUCH:	
+		
+			if(touchEvent.getAction() == TouchEvent.ACTION_DOWN)
+			{	
+			
+				float xDown = touchEvent.getX();
+				float yDown = touchEvent.getY();
+		
+				float xPlayer = level.getPlayer().getX();
+				float yPlayer = level.getPlayer().getY();
+				
+				
+				if ((xDown + yPlayer) < (xPlayer + yDown)) {
+					if ((xDown - yPlayer) < (xPlayer - yDown)){
+						//LEFT
+						checkCollision(PlayerEntity.DIRECTION_LEFT);
+					}else if ((xDown - yPlayer) > (xPlayer - yDown)){
+						//DOWN
+						checkCollision(PlayerEntity.DIRECTION_UP);
+					}
+				}
+				else if ((xDown + yPlayer) > (xPlayer + yDown)) {
+					if ((xDown - yPlayer) > (xPlayer - yDown)) {
+						//RIGHT
+						checkCollision(PlayerEntity.DIRECTION_RIGHT);
+					}else if ((xDown - yPlayer) < (xPlayer - yDown)){
+						//UP
+						checkCollision(PlayerEntity.DIRECTION_DOWN);
+					}
+				}
+
+			}
+			
+			break;
+		
+			
+		case GameValues.STEERING_SLIDE:
+			
+			
+			
+			
+			break;
+		
+		}
+		
+		
+		return true;
+	}
+	
+	
+	
+	private void checkCollision(int dir){
+		
+		PlayerEntity player = level.getPlayer();
+		
+		if(player.getColumn() < 0 || player.getRow() < 0 || player.getColumn() >= level.getWidth() || player.getRow() >= level.getHeight())
+			return;
+		
+		int col = player.getColumn();
+		int row = player.getRow();
+		int id = GameValues.BLANK_ID;
+		
+		switch(level.getItem(col, row)){
+		case GameValues.ONESTEP_ID:
+			id = GameValues.BLANK_ID;
+			break;
+		
+		case GameValues.TWOSTEP_ID:
+			id = GameValues.ONESTEP_ID;
+			break;
+		
+		}
+		
+		
+		switch(dir){
+		
+		case PlayerEntity.DIRECTION_UP:
+			if(level.getItem(col, row+1) != GameValues.SOLID_ID && 
+			   level.getItem(col, row+1) != GameValues.BLANK_ID){	
+			
+			player.move(dir);
+			
+			mGameScene.addItem(col, row, id);
+			
+			level.setItem(col, row, id);
+			
+			if(level.getItem(col, row+1) == GameValues.END_ID){
+				onEnd();
+			}
+			if(level.isStar(col, row+1)){
+			
+			}
+			}
+
+			
+			break;
+		
+		case PlayerEntity.DIRECTION_DOWN:
+
+			if(level.getItem(col, row-1) != GameValues.SOLID_ID && 
+			   level.getItem(col, row-1) != GameValues.BLANK_ID ){	
+			
+			player.move(dir);
+			
+			mGameScene.addItem(col, row, id);
+			
+			level.setItem(col, row, id);
+			
+			if(level.getItem(col, row-1) == GameValues.END_ID){
+				onEnd();
+			}
+			
+			}
+
+			
+			break;
+		
+		case PlayerEntity.DIRECTION_LEFT:
+			
+			if(level.getItem(col-1, row) != GameValues.SOLID_ID && 
+			   level.getItem(col-1, row) != GameValues.BLANK_ID ){
+			
+			player.move(dir);
+			
+			mGameScene.addItem(col, row, id);
+			
+			level.setItem(col, row, id);
+			
+			if(level.getItem(col-1, row) == GameValues.END_ID){
+				onEnd();
+			}
+			
+			}
+			
+			
+			break;
+		
+		case PlayerEntity.DIRECTION_RIGHT:
+	
+			if(level.getItem(col+1, row) != GameValues.SOLID_ID && 
+			   level.getItem(col+1, row) != GameValues.BLANK_ID ){	
+			
+			player.move(dir);
+			
+			mGameScene.addItem(col, row, id);
+			
+			level.setItem(col, row, id);
+
+			if(level.getItem(col+1, row) == GameValues.END_ID){
+				onEnd();
+			}
+			
+			}
+		
+			break;
+
+	
+		
+		}
+		
+	}
+	
+	
+	private void onEnd(){
+		
+	}
+	
+	private void onGameRestart(){
+	
+		level.getPlayer().detachSelf();
+		
+		int id = level.getId();
+		int levelpack = level.getLevelpackId();
+		level = LevelFileReader.getLevelFromFile(this, "level_" + Integer.toString(levelpack) + "_" + Integer.toString(id));
+		LevelSceneFactory.redraw(this, mGameScene, level, mGameTexturePack);
+		
+		
+	}
+	
+	
+	@SuppressWarnings("unused")
 	private void changeSceneWithFade(final Scene s, final float time){
 		
 		Scene cs = this.getEngine().getScene();
@@ -280,6 +493,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		
 		}
+
 
 	
 }

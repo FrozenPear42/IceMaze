@@ -2,6 +2,7 @@ package com.bugfullabs.icemaze.level;
 
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.debug.Debug;
 
 import com.bugfullabs.icemaze.GameValues;
 import com.bugfullabs.icemaze.game.PlayerEntity;
@@ -28,10 +29,13 @@ public class Level{
 	private int playerX;
 	private int playerY;
 	
+	private int stars[][];
 	
 	
 public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
+		stars = new int[3][3];
+	
 		width = columns;
 		height = rows;
 		
@@ -60,7 +64,15 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 	}
 	
-
+	public void setItem(final int column, final int row, final int id){
+		
+		if(!isCorrect(column, row)){
+			return;
+		}
+		
+		level_pattern[column][row] = id;
+		
+	}
 	
 	public int getWidth(){
 		
@@ -104,6 +116,8 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 	
 	public void createPlayer(VertexBufferObjectManager vm, TextureRegion tx){
 		player = new PlayerEntity(vm, playerX*32, playerY*32, tx);
+
+		Debug.i(Integer.toString(player.getZIndex()));
 	}
 	
 	public PlayerEntity getPlayer(){
@@ -115,7 +129,44 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		return !(column < 0 || row < 0 || column >= width || row >= height);
 	}
+
+	public void addStar(int id, int column, int row) {
+		stars[id][0] = column;
+		stars[id][1] = row;
+		stars[id][2] = 0;
+	}
 	
+	
+	public int getStarColumn(int id){
+		return stars[id][0];
+	}
+	
+	public int getStarRow(int id){
+		return stars[id][1];
+	}
+	
+	public boolean getStarCollected(int id){
+		return stars[id][2] == 1;
+	}
+	
+	public void setStarCollected(int id, boolean col){
+		if(col)
+			stars[id][2] = 1;
+		else
+			stars[id][2] = 0;
+	}
+	
+	public boolean isStar(int c, int r){
+		
+		for(int i = 0; i < 3 ; i++){
+			if(stars[i][0] == c && stars[i][1] == r){
+				setStarCollected(i, true);
+				return true;
+			}
+		}
+		
+		return false;
+	}
 	
 	
 }
