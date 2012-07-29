@@ -42,9 +42,8 @@ public class LevelSceneFactory{
   		  	level.createPlayer(a.getVertexBufferObjectManager(), txl.get(GameValues.PLAYER_ID));
   		  	level.getPlayer().attachToScene(levelScene);
 			level.getPlayer().setZIndex(2);
+			level.setEndsActive(levelScene, false);
 			levelScene.sortChildren();
-			
-			
 			
 			return levelScene;
 	}
@@ -72,6 +71,9 @@ public class LevelSceneFactory{
 		  	l.createPlayer(a.getVertexBufferObjectManager(), tx.getTexturePackTextureRegionLibrary().get(GameValues.PLAYER_ID));
 		  	l.getPlayer().attachToScene(s);
 		  	l.getPlayer().setZIndex(2);
+		  	
+		  	l.setEndsActive(s, false);
+		  	
 		  	s.sortChildren();
 	}
 	

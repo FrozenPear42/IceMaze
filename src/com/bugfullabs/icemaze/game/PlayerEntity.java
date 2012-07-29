@@ -28,6 +28,7 @@ public class PlayerEntity extends Sprite{
 	private Scene mScene;
 	private int mColumn;
 	private int mRow;
+	private boolean modifierFinished = true;
 	
 	
 	public static final int DIRECTION_UP = 0;
@@ -35,7 +36,7 @@ public class PlayerEntity extends Sprite{
 	public static final int DIRECTION_LEFT = 2;
 	public static final int DIRECTION_RIGHT = 3;
 	
-	
+
 	public PlayerEntity(VertexBufferObjectManager vm, int pX, int pY, TextureRegion tx) {
 	super(pX, pY, tx, vm);	
 	initX = pX;
@@ -86,6 +87,7 @@ public class PlayerEntity extends Sprite{
 		
 	public void moveTo(float endX, float endY){
 	
+		modifierFinished = false;
 
 		mM = new MoveModifier(0.2f, this.getX(), endX, this.getY(), endY);
 		mM.addModifierListener(new IModifierListener<IEntity>(){
@@ -100,14 +102,17 @@ public class PlayerEntity extends Sprite{
 			public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
 				mColumn = (int) (getX()/32);
 				mRow = (int) (getY()/32);
+				modifierFinished = true;
+				
 			}
 		});
-		
-		this.mM.setAutoUnregisterWhenFinished(true);
+		mM.setAutoUnregisterWhenFinished(true);
 		this.registerEntityModifier(mM);
-		
 
-		
+	}
+	
+	public boolean isFinished(){
+		return modifierFinished;
 	}
 	
 	public void move(int dir){

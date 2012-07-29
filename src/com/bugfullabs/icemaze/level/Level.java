@@ -1,10 +1,14 @@
 package com.bugfullabs.icemaze.level;
 
+import java.util.ArrayList;
+
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
 import com.bugfullabs.icemaze.GameValues;
+import com.bugfullabs.icemaze.game.EndEntity;
+import com.bugfullabs.icemaze.game.GameScene;
 import com.bugfullabs.icemaze.game.PlayerEntity;
 
 /**
@@ -30,12 +34,14 @@ public class Level{
 	private int playerY;
 	
 	private int stars[][];
+	private ArrayList<EndEntity> mEnds;
 	
 	
 public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		stars = new int[3][3];
-	
+		mEnds = new ArrayList<EndEntity>();
+		
 		width = columns;
 		height = rows;
 		
@@ -158,6 +164,41 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		return -1;
 	}
 	
+	public void findEnds(){
+	
+		for(int i = 0; i < width; i++){
+			for(int j = 0; j < height; j++){
+				if(level_pattern[i][j] == GameValues.END_ID){
+					mEnds.add(new EndEntity(i, j));
+				}
+			}
+		}
+		
+	}
+	
+	public EndEntity getEnd(int id){
+		return mEnds.get(id);
+	}
+	
+	public void setEndsActive(GameScene s, boolean t){
+		
+		if(t){	
+		for(int i = 0; i < mEnds.size(); i++){
+			int c = mEnds.get(i).getColumn();
+			int r = mEnds.get(i).getRow();
+			s.addItem(c, r, GameValues.END_ID);
+		}
+		}else{
+		for(int i = 0; i < mEnds.size(); i++){
+			int c = mEnds.get(i).getColumn();
+			int r = mEnds.get(i).getRow();
+			s.addItem(c, r, GameValues.END_UN_ID);
+
+		}		
+		}
+		
+	}
+	
 	public void setStarCollected(int id, boolean col){
 		if(col)
 			stars[id][2] = 1;
@@ -179,6 +220,8 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		return false;
 	}
+	
+	
 	
 	
 }

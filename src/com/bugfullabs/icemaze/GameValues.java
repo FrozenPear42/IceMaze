@@ -17,7 +17,7 @@ public interface GameValues{
 	public static final int NEXT_ID = 2;
 	public static final int PAUSE_ID = 3;
 	public static final int RESTART_ID = 4;
-	
+	public static final int SCOREBG_ID = 5;
 	/* GAME */
 	public static final int PLAYER_ID = 0;
 	public static final int SOLID_ID = 1;

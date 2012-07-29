@@ -30,7 +30,9 @@ public class LevelFileReader{
 		
 		sp.parse(activity.getAssets().open("levels/"+file+".xml"), handler);
 		
-		return handler.getLevel();
+		Level level = handler.getLevel();
+		level.findEnds();
+		return level;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

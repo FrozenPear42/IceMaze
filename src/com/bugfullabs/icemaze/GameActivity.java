@@ -10,6 +10,7 @@ import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.entity.modifier.FadeOutModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
+import org.andengine.entity.modifier.MoveYModifier;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
@@ -25,6 +26,8 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
 import org.andengine.util.modifier.IModifier;
+import org.andengine.util.modifier.ease.EaseBackOut;
+import org.andengine.util.modifier.ease.EaseSineIn;
 import org.andengine.util.texturepack.TexturePack;
 import org.andengine.util.texturepack.TexturePackLoader;
 import org.andengine.util.texturepack.TexturePackTextureRegionLibrary;
@@ -77,6 +80,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private Sprite mPauseButton;
 	private Sprite mRestartButton;
 
+	private Sprite mScoreBackground;
 	
 	private static Level level;
 
@@ -146,6 +150,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		/* MENU SCENE */
 		createMenuScene();	
 		
+		
 		/* GAME SCENE */
 		mGameScene = LevelSceneFactory.createScene(this, level, mGameTexturePack);
 		
@@ -182,6 +187,60 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mGameScene.setOnSceneTouchListener(this);
 		
 		this.mGameScene.setTouchAreaBindingOnActionDownEnabled(true);
+		
+		
+		/* SCORE INFO */
+		mScoreBackground = new Sprite(100, -(cameraHeight-100), cameraWidth-200, cameraHeight-100,  mMenuTextures.get(GameValues.SCOREBG_ID),getVertexBufferObjectManager());
+		mScoreBackground.setZIndex(11);
+
+			Sprite restart = new Sprite(92, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
+			@Override
+	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+				
+				onGameRestart();
+				
+				mScoreBackground.registerEntityModifier(new MoveYModifier(1.7f, mScoreBackground.getY(), -(cameraHeight-100), EaseSineIn.getInstance()));
+				
+				return true;
+			}
+		};
+		
+		Sprite menu = new Sprite(236, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.MENU_ID), getVertexBufferObjectManager()){
+			@Override
+	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+				
+				GameActivity.this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
+				GameActivity.this.finish();
+				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+				
+				
+				return true;
+			}
+		};
+		
+		Sprite next = new Sprite(380, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.NEXT_ID), getVertexBufferObjectManager()){
+			@Override
+	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+				
+				return true;
+			}
+		};
+		
+		
+		mScoreBackground.attachChild(restart);
+		mScoreBackground.attachChild(menu);
+		mScoreBackground.attachChild(next);
+		
+		mGameScene.registerTouchArea(next);
+		mGameScene.registerTouchArea(menu);
+		mGameScene.registerTouchArea(restart);
+		
+		mGameScene.sortChildren();
+		mGameScene.attachChild(mScoreBackground);
+		
+		
+		
+		
 		return mGameScene;
 	}
 	
@@ -239,12 +298,15 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	@Override
 	public boolean onKeyDown(final int pKeyCode, final KeyEvent pEvent) {
 		if((pKeyCode == KeyEvent.KEYCODE_MENU || pKeyCode == KeyEvent.KEYCODE_BACK ) && pEvent.getAction() == KeyEvent.ACTION_DOWN) {
+			if(mGameScene != null){
+			
 			if(this.mGameScene.hasChildScene()) {
 				doResume();
 			} else {
 				doPause();
 			}
 			return true;
+		}
 		}
 		return super.onKeyDown(pKeyCode, pEvent); 
 	}
@@ -336,8 +398,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		PlayerEntity player = level.getPlayer();
 		
+		if(!player.isFinished())
+			return;
+		
 		if(player.getColumn() < 0 || player.getRow() < 0 || player.getColumn() >= level.getWidth() || player.getRow() >= level.getHeight())
 			return;
+		
+		
 		
 		int col = player.getColumn();
 		int row = player.getRow();
@@ -401,7 +468,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				addStar();
 				if(starCounter >= 3){
 				canExit = true;
-				//TODO: CHANGE END	
+				
+				level.setEndsActive(mGameScene, true);
 				}
 				}
 				}
@@ -421,6 +489,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private void onEnd(){
 	
 	//TODO: SHOW SCORE SCENE
+		mScoreBackground.registerEntityModifier(new MoveYModifier(1.5f, mScoreBackground.getY(), 50, EaseBackOut.getInstance()));
+		
 		
 	}
 	
