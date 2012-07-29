@@ -84,8 +84,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	//private SharedPreferences.Editor mEditor;
 	private int steering;
 	
+	private Sprite[] stars;
 	
-	
+	private boolean canExit = false;
 	
 	/* BASE ENGINE & GAME FUNCTIONS */
 	
@@ -135,9 +136,12 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		/* SHARED PREFS CONFIG */
 		mSettings = getSharedPreferences(GameValues.SETTINGS_FILE, 0);
 		//mEditor = mSettings.edit();
-		
 		this.steering = mSettings.getInt("steering", GameValues.STEERING_TOUCH);
 		
+		
+		/* STARS COUNTER */
+		starCounter = 0;
+		stars = new Sprite[3];
 		
 		/* MENU SCENE */
 		createMenuScene();	
@@ -387,28 +391,51 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				
 				level.setItem(col, row, id);
 				
-				if(level.getItem(nCol, nRow) == GameValues.END_ID){
+				if(level.getItem(nCol, nRow) == GameValues.END_ID && canExit){
 					onEnd();
+				
 				}
 				if(level.isStar(nCol, nRow)){
 				mGameScene.removeStar(level.getStarId(nCol, nRow));
-				//TODO: INCREASE STAR COUNTER
-				//TODO: CHECK IF EXIT CAN BE UNLOCKED
+				starCounter++;
+				addStar();
+				if(starCounter >= 3){
+				canExit = true;
+				//TODO: CHANGE END	
+				}
 				}
 				}
 	
 	}
 		
-		
+	
+	private void addStar(){
+		stars[starCounter-1] = new Sprite((cameraWidth-32)-32*starCounter,0, mGameTexturePack.getTexturePackTextureRegionLibrary().get(GameValues.FLAME_ID), getVertexBufferObjectManager());
+		mGameScene.attachChild(stars[starCounter-1]);
+		stars[starCounter-1].setZIndex(10);
+		mGameScene.sortChildren();
+	}
 		
 	
 	
 	private void onEnd(){
+	
+	//TODO: SHOW SCORE SCENE
 		
 	}
 	
 	private void onGameRestart(){
-	
+		canExit = false;
+		starCounter = 0;
+		
+		for(int i = 0; i < 3; i++){
+			if(stars[i] != null){
+			stars[i].detachSelf();
+			stars[i] = null;
+			}
+			
+		}
+		
 		level.getPlayer().detachSelf();
 		
 		int id = level.getId();

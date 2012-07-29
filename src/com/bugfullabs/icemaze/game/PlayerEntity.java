@@ -87,7 +87,7 @@ public class PlayerEntity extends Sprite{
 	public void moveTo(float endX, float endY){
 	
 
-		mM = new MoveModifier(0.1f, this.getX(), endX, this.getY(), endY);
+		mM = new MoveModifier(0.2f, this.getX(), endX, this.getY(), endY);
 		mM.addModifierListener(new IModifierListener<IEntity>(){
 
 			@Override
