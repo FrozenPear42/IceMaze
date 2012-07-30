@@ -58,6 +58,9 @@ import com.bugfullabs.icemaze.util.AlignedText;
 
 
 //FIXME: CHECK IF LEVEL IS NOT NULL
+//TODO: COUNT TIME
+//TIME: COUNT TILES CRASHED
+
 
 public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemClickListener, IOnSceneTouchListener{
 
@@ -213,11 +216,11 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			Sprite restart = new Sprite(92, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
-				
+				if(pSceneTouchEvent.isActionUp()){	
 				onGameRestart();
 				
 				mScoreBackground.registerEntityModifier(new MoveYModifier(1.7f, mScoreBackground.getY(), -(cameraHeight-100), EaseSineIn.getInstance()));
-				
+				}
 				return true;
 			}
 		};
@@ -226,11 +229,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				
+				if(pSceneTouchEvent.isActionUp()){
+				
 				GameActivity.this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
 				GameActivity.this.finish();
 				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 				
-				
+				}
 				return true;
 			}
 		};
@@ -239,6 +244,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				
+				if(pSceneTouchEvent.isActionUp()){
 
 				mScoreBackground.registerEntityModifier(new MoveYModifier(1.7f, mScoreBackground.getY(), -(cameraHeight-100), new IEntityModifierListener() {
 					@Override
@@ -253,7 +259,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 					}
 				}, EaseSineIn.getInstance()));
 				
-				
+				}
 				return true;
 			}
 		};
@@ -553,6 +559,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private void nextLevel(){
 		final int levelID = level.getId();
 		final int levelpackID = level.getLevelpackId();
+		
+		Debug.i("Level ID: " + Integer.toString(levelID));
+		Debug.i("Level ID + 1: " + Integer.toString(levelID+1));
 		
 		canExit = false;
 		starCounter = 0;
