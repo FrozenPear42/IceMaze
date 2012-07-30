@@ -59,8 +59,9 @@ import com.bugfullabs.icemaze.util.AlignedText;
 
 //FIXME: CHECK IF LEVEL IS NOT NULL
 //TODO: COUNT TIME
-//TIME: COUNT TILES CRASHED
-
+//TODO: COUNT TILES CRASHED
+//TODO: FADE TRANSITION BETWEEN LEVELS
+//TODO: SCORE SYSTEM
 
 public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemClickListener, IOnSceneTouchListener{
 
@@ -103,6 +104,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	private boolean canExit = false;
 
+	private boolean nextLevel = false;
+	
 	/* BASE ENGINE & GAME FUNCTIONS */
 	
 	@Override
@@ -253,9 +256,10 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 					
 					@Override
 					public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-					
-					nextLevel();
-						
+						if(!nextLevel){
+						nextLevel = true;
+						nextLevel();
+						}
 					}
 				}, EaseSineIn.getInstance()));
 				
@@ -571,7 +575,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			stars[i].detachSelf();
 			stars[i] = null;
 			}
-			
+			nextLevel = false;
 		}
 		
 		level.getPlayer().detachSelf();

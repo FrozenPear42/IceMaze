@@ -10,12 +10,15 @@ import org.andengine.entity.modifier.FadeOutModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.scene.background.SpriteBackground;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.font.StrokeFont;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.HorizontalAlign;
+import org.andengine.util.VerticalAlign;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.texturepack.TexturePack;
 import org.andengine.util.texturepack.TexturePackLoader;
@@ -31,6 +34,7 @@ import android.view.KeyEvent;
 
 import com.bugfullabs.icemaze.level.Level;
 import com.bugfullabs.icemaze.level.LevelFileReader;
+import com.bugfullabs.icemaze.util.AlignedText;
 import com.bugfullabs.icemaze.util.Button;
 
 
@@ -88,7 +92,10 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 
 	private boolean inStart = true;
 	
-
+  	private Button next;
+  	private Button back;
+	
+	
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -99,7 +106,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		MainMenuActivity.cameraHeight = disp.getHeight();
 		
 		marginX = cameraWidth/2 - ((offsetX)*(NUMBER_OF_ITEMS_IN_ROW/2));
-		marginY = cameraHeight/2 - (((offsetY)*((NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW)/2)));
+		marginY = cameraHeight/2 - (((offsetY)*((NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW)/2))) + offsetY + 16;
 		
 		mSettings = getSharedPreferences(GameValues.SETTINGS_FILE, 0);
 		mEditor = mSettings.edit();
@@ -132,10 +139,10 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
         
        
         TexturePackTextureRegion shortTextureRegion = mTextures.get(GameValues.BUTTONSHORT_ID);
-        mButtonShortRegion = TiledTextureRegion.create(mTexturePack.getTexture(), shortTextureRegion.getSourceX(), shortTextureRegion.getSourceY(), shortTextureRegion.getSourceWidth(), shortTextureRegion.getSourceHeight(), 2, 1);
+        mButtonShortRegion = TiledTextureRegion.create(mTexturePack.getTexture(), (int) shortTextureRegion.getTextureX(), (int)shortTextureRegion.getTextureY(), shortTextureRegion.getSourceWidth(), shortTextureRegion.getSourceHeight(), 2, 1);
        
         TexturePackTextureRegion textureRegion = mTextures.get(GameValues.BUTTONLONG_ID);
-        mButtonLongRegion = TiledTextureRegion.create(mTexturePack.getTexture(), textureRegion.getSourceX(), textureRegion.getSourceY(), textureRegion.getSourceWidth(), textureRegion.getSourceHeight(), 2, 1);
+        mButtonLongRegion = TiledTextureRegion.create(mTexturePack.getTexture(), (int) textureRegion.getTextureX(), (int) textureRegion.getTextureY(), textureRegion.getSourceWidth(), textureRegion.getSourceHeight(), 2, 1);
         
      
         mFontTexture.load();
@@ -146,12 +153,15 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	@Override
 	protected Scene onCreateScene() {
 		this.mMainScene = new Scene();
-		mMainScene.setBackground(new Background(0.34f, 0.42f, 0.73f));
+		mMainScene.setBackground(new SpriteBackground(new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager())));
 		
 		this.mOptionsScene = new Scene();
-		mOptionsScene.setBackground(new Background(0.54f, 0.92f, 0.33f));
+		mOptionsScene.setBackground(new SpriteBackground(new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager())));
 		
-
+		mMainScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.TITLE_ID), getVertexBufferObjectManager()));
+		mOptionsScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.SETTINGS_ID), getVertexBufferObjectManager()));
+		
+		
 		setLevelSelectGrid();
 		
 		
@@ -250,13 +260,56 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  	mGridScene = new Scene();
 
 	  	
+	  	
 	  	//final Sprite bg = new Sprite(0, 0, mBackgroundTextureRegion, getVertexBufferObjectManager());
 	  	//bg.setWidth(cameraWidth);
 	  	//bg.setHeight(cameraHeight);
 	  	//mGridScene.setBackground(new SpriteBackground(bg));
-	  	mGridScene.setBackground(new Background(0.654f, 0.312f, 0.73f));
+	  	mGridScene.setBackground(new SpriteBackground(new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager())));
+		
+		mGridScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.LEVELSELECT_ID), getVertexBufferObjectManager()));
+		
 
+	  	final AlignedText levelpack = new AlignedText(0,  marginY - 72, mFont, "LEVELPACK: " + Integer.toString(levelpackId), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth, 24, this);
+	  	
+	  	mGridScene.attachChild(levelpack);	  
 
+	  	back = new Button(this, mGridScene, marginX - (36 + 128) , marginY + offsetY -36, 72, 72, "-", mButtonShortRegion, mFont){
+	  		@Override
+	  		public boolean onButtonPressed(){
+				
+	  			if(levelpackId > 1){
+	  			levelpackId--;	
+	  			levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
+	  			next.setVisible(true);	
+	  			if(levelpackId <= 1){
+	  			back.setVisible(false);
+	  			}
+	  			}
+				return true;
+			  }
+	  	};
+	  	
+	  	back.setVisible(false);
+	  	
+	  	next = new Button(this, mGridScene,  cameraWidth - marginX - 36 + 128 , marginY + offsetY -36, 72, 72, "+", mButtonShortRegion, mFont){
+	  		@Override
+	  		public boolean onButtonPressed(){
+	  			
+				if(levelpackId < GameValues.LEVELPACKS){
+	  			levelpackId++;
+	  			levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
+	  			back.setVisible(true);
+	  			if(levelpackId >= GameValues.LEVELPACKS){
+	  			this.setVisible(false);
+	  			}
+				}
+				return true;
+			  }
+
+	  	};
+	  	
+	
 	  	  int i = 0;
 
 	  	  
@@ -265,6 +318,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 				for(int k = 0; k < NUMBER_OF_ITEMS_IN_ROW; k++){
 
 				final int id = i + 1;
+				
+				//TODO: DONE LEVELS
 				
 				new Button(this, mGridScene,  marginX + (k * offsetX) - 36, marginY + (j * offsetY)- 36, 72, 72, Integer.toString(id),  mButtonShortRegion, mFont){
 	    			  @Override

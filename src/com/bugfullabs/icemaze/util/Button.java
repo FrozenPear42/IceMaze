@@ -86,6 +86,16 @@ public class Button{
 		bgButton.setPosition(x, y);
 	}
 	
+	
+	public void setVisible(boolean b) {
+		
+		textButton.setVisible(b);
+		bgButton.setVisible(b);
+		
+	}
+	
+	
+	
 	public boolean onButtonPressed(){
 		return false;
 	}
@@ -108,6 +118,8 @@ public class Button{
 		
 		return (int) this.bgButton.getWidth();
 	}
+	
+	
 	
 	
 	void detachSelf(){

@@ -30,13 +30,23 @@ public interface GameValues{
 	
 	/* MAIN MENU */
 
-	public static final int BUTTONLONG_ID = 0;
-	public static final int BUTTONSHORT_ID = 1;
+	public static final int BG_ID = 0;
+	public static final int BUTTONLONG_ID = 1;
+	public static final int BUTTONSHORT_ID = 2;
+	public static final int BUTTONSHORTDONE_ID = 3;
+	public static final int LEVELSELECT_ID = 4;
+	public static final int SETTINGS_ID = 5;
+	public static final int TITLE_ID = 6;
 	
 	/* SHARED PREFS */
 	public static final String SETTINGS_FILE = "Settings";
 	public static final int STEERING_TOUCH = 0;
 	public static final int STEERING_SLIDE = 1;
+	
+	
+	/* GAME VALUES */
+	
+	public static final int LEVELPACKS = 2;
 	
 	
 }
