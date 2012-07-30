@@ -187,13 +187,14 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 			int c = mEnds.get(i).getColumn();
 			int r = mEnds.get(i).getRow();
 			s.addItem(c, r, GameValues.END_ID);
+			level_pattern[c][r] = GameValues.END_ID;
 		}
 		}else{
 		for(int i = 0; i < mEnds.size(); i++){
 			int c = mEnds.get(i).getColumn();
 			int r = mEnds.get(i).getRow();
 			s.addItem(c, r, GameValues.END_UN_ID);
-
+			level_pattern[c][r] = GameValues.END_UN_ID;
 		}		
 		}
 		

@@ -465,7 +465,15 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		case GameValues.TWOSTEP_ID:
 			id = GameValues.ONESTEP_ID;
 			break;
+			
+		case GameValues.END_UN_ID:
+			id = GameValues.END_UN_ID;
+			break;
 		
+		case GameValues.END_ID:
+			id = GameValues.END_ID;
+			break;
+				
 		}
 		
 		
