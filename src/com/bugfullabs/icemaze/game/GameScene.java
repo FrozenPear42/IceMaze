@@ -12,6 +12,8 @@ public class GameScene extends Scene{
 
 	private Sprite[][] mSprites;
 	private Sprite[]   mStars;
+
+	private Level level;
 	
 	private BaseGameActivity mActivity;
 	private TexturePack mTexturePack;
@@ -29,6 +31,8 @@ public class GameScene extends Scene{
 	
 	width = l.getWidth();
 	height = l.getHeight();
+	
+	level = l;
 	
 	mSprites = new Sprite[width][height];
 	mStars = new Sprite[3];
@@ -60,6 +64,8 @@ public class GameScene extends Scene{
 	}
 	
 	public void removeAllItems(){
+		
+		//level.getPlayer().detachSelf();
 		
 		for(int i = 0; i < 3; i++){
 			this.detachChild(mStars[i]);

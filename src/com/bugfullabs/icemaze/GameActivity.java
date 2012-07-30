@@ -24,6 +24,8 @@ import org.andengine.opengl.font.StrokeFont;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.HorizontalAlign;
+import org.andengine.util.VerticalAlign;
 import org.andengine.util.debug.Debug;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.ease.EaseBackOut;
@@ -43,6 +45,7 @@ import com.bugfullabs.icemaze.game.PlayerEntity;
 import com.bugfullabs.icemaze.level.Level;
 import com.bugfullabs.icemaze.level.LevelFileReader;
 import com.bugfullabs.icemaze.level.LevelSceneFactory;
+import com.bugfullabs.icemaze.util.AlignedText;
 
 
 /**
@@ -53,6 +56,8 @@ import com.bugfullabs.icemaze.level.LevelSceneFactory;
  *
  */
 
+
+//FIXME: CHECK IF LEVEL IS NOT NULL
 
 public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemClickListener, IOnSceneTouchListener{
 
@@ -76,6 +81,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	private BitmapTextureAtlas mFontTexture;
 	private StrokeFont mFont;
+
+	private BitmapTextureAtlas mBigFontTexture;
+	private StrokeFont mBigFont;
 	
 	private Sprite mPauseButton;
 	private Sprite mRestartButton;
@@ -91,7 +99,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private Sprite[] stars;
 	
 	private boolean canExit = false;
-	
+
 	/* BASE ENGINE & GAME FUNCTIONS */
 	
 	@Override
@@ -112,6 +120,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
     mFont = new StrokeFont(getFontManager(), mFontTexture, typeface, 26, true, Color.WHITE, 2, Color.BLACK);	
 	mFontTexture.load();
     mFont.load();
+
+	mBigFontTexture = new BitmapTextureAtlas(getTextureManager() ,256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+	typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
+    mBigFont = new StrokeFont(getFontManager(), mFontTexture, typeface, 60, true, Color.WHITE, 2, Color.BLACK);	
+	mBigFontTexture.load();
+    mBigFont.load();
+    
     /* MENU ITEMS */
 	try {
 	mMenuTexturePack = tpl.loadFromAsset("gfx/menu/gamemenu.xml", "gfx/menu/");
@@ -183,16 +198,18 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mRestartButton.setZIndex(10);
 		mGameScene.registerTouchArea(mRestartButton);
 		mGameScene.attachChild(mRestartButton);
-		
 		mGameScene.setOnSceneTouchListener(this);
-		
 		this.mGameScene.setTouchAreaBindingOnActionDownEnabled(true);
+		
+		
 		
 		
 		/* SCORE INFO */
 		mScoreBackground = new Sprite(100, -(cameraHeight-100), cameraWidth-200, cameraHeight-100,  mMenuTextures.get(GameValues.SCOREBG_ID),getVertexBufferObjectManager());
 		mScoreBackground.setZIndex(11);
 
+			AlignedText text = new AlignedText(0, 20, mBigFont, "GREAT!", HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 100, this);
+		
 			Sprite restart = new Sprite(92, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
@@ -222,6 +239,21 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				
+
+				mScoreBackground.registerEntityModifier(new MoveYModifier(1.7f, mScoreBackground.getY(), -(cameraHeight-100), new IEntityModifierListener() {
+					@Override
+					public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+					}
+					
+					@Override
+					public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+					
+					nextLevel();
+						
+					}
+				}, EaseSineIn.getInstance()));
+				
+				
 				return true;
 			}
 		};
@@ -230,6 +262,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mScoreBackground.attachChild(restart);
 		mScoreBackground.attachChild(menu);
 		mScoreBackground.attachChild(next);
+		mScoreBackground.attachChild(text);
 		
 		mGameScene.registerTouchArea(next);
 		mGameScene.registerTouchArea(menu);
@@ -489,7 +522,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private void onEnd(){
 	
 	//TODO: SHOW SCORE SCENE
-		mScoreBackground.registerEntityModifier(new MoveYModifier(1.5f, mScoreBackground.getY(), 50, EaseBackOut.getInstance()));
+		mScoreBackground.registerEntityModifier(new MoveYModifier(2.0f, mScoreBackground.getY(), 50, EaseBackOut.getInstance()));
 		
 		
 	}
@@ -515,6 +548,43 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		
 	}
+	
+
+	private void nextLevel(){
+		final int levelID = level.getId();
+		final int levelpackID = level.getLevelpackId();
+		
+		canExit = false;
+		starCounter = 0;
+		
+		for(int i = 0; i < 3; i++){
+			if(stars[i] != null){
+			stars[i].detachSelf();
+			stars[i] = null;
+			}
+			
+		}
+		
+		level.getPlayer().detachSelf();
+		
+		
+		if(levelID < 15){
+			
+			level = LevelFileReader.getLevelFromFile(GameActivity.this, "level_"+ Integer.toString(levelpackID) + "_" +  Integer.toString(levelID+1));	
+			
+			LevelSceneFactory.redraw(GameActivity.this, mGameScene, level, mGameTexturePack);
+		
+			
+			}else{
+				
+				GameActivity.this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
+				GameActivity.this.finish();
+				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+			}
+		
+		
+	}
+	
 	
 	
 	@SuppressWarnings("unused")
