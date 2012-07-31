@@ -43,6 +43,7 @@ import com.bugfullabs.icemaze.util.Button;
  *
  */
 
+//TODO: REDRAW GRID AFTER RESET & GAME
 
 public class MainMenuActivity extends SimpleBaseGameActivity{
 
@@ -55,6 +56,10 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	
 	private BitmapTextureAtlas mFontTexture;
 	private StrokeFont mFont;
+	
+	private BitmapTextureAtlas mSFontTexture;
+	private StrokeFont mSFont;
+	
 
 	private TexturePackTextureRegionLibrary mTextures;
 	
@@ -128,6 +133,13 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		this.mFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         Typeface typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
         mFont = new StrokeFont(this.getFontManager(), mFontTexture, typeface, 30, true, Color.WHITE, 2, Color.BLACK);
+        
+        this.mSFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
+        mSFont = new StrokeFont(this.getFontManager(), mSFontTexture, typeface, 40, true, Color.WHITE, 2, Color.BLACK);
+        
+        mSFontTexture.load();
+        mSFont.load();
         
         TexturePackLoader tpl = new TexturePackLoader(getAssets(), getTextureManager());
         try {
@@ -286,7 +298,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 
 
 		mScene.attachChild(new Sprite(-cameraWidth, 0, mTextures.get(GameValues.CREDITS_ID), getVertexBufferObjectManager()));
-		Text credits = new Text(-cameraWidth + 20, cameraHeight/2-32, this.mFont, getString(R.string.creditstext), getVertexBufferObjectManager());
+		Text credits = new Text(-cameraWidth + 20, cameraHeight/2-32, this.mSFont, getString(R.string.creditstext), getVertexBufferObjectManager());
 		credits.setTextOptions(new TextOptions(HorizontalAlign.LEFT));
 		mScene.attachChild(credits);
 		
@@ -413,8 +425,9 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			  	final Level level = LevelFileReader.getLevelFromFile(this, "level_"+ Integer.toString(level_pack) + "_" + Integer.toString(id));
 
 			  	GameActivity.setLevel(level);
-
+			  	
 			  	this.startActivity(new Intent(this, GameActivity.class));
+			  	this.finish();
 			  	overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			  	
 			} catch (Exception e) {
