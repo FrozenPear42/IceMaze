@@ -322,7 +322,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  			levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
 	  			next.setVisible(true);	
 	  			
-	  			mCamera.setCenter(mCamera.getCenterX()-cameraWidth, mCamera.getCenterY());
+	  			mCamera.setCenter(cameraInitX + cameraWidth*levelpackId, mCamera.getCenterY());
 	  			
 	  			if(levelpackId <= 1){
 	  			back.setVisible(false);
@@ -342,7 +342,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  			levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
 	  			back.setVisible(true);
 
-	  			mCamera.setCenter(mCamera.getCenterX()+cameraWidth, mCamera.getCenterY());
+	  			mCamera.setCenter(cameraInitX + cameraWidth*levelpackId, mCamera.getCenterY());
 	  			
 	  			if(levelpackId >= GameValues.LEVELPACKS){
 	  			this.setVisible(false);

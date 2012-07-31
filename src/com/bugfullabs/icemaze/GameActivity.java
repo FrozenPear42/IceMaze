@@ -251,9 +251,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		//SCORES	
 		mTime = new Text(40, 120, mFont, "TIME: XX:XX", 12, getVertexBufferObjectManager());
-		mTiles = new Text(340, 120, mFont, "TILES: XXX/XXX", 15, getVertexBufferObjectManager());
+		mTiles = new Text(320, 120, mFont, "TILES: XXX/XXX", 15, getVertexBufferObjectManager());
 		mTextScore = new Text(40, 170, mFont, "SCORE: XXXXX", 14, getVertexBufferObjectManager());
-		mTextHighScore = new Text(340, 170, mFont, "HIGH: XXXXX", 16, getVertexBufferObjectManager());
+		mTextHighScore = new Text(320, 170, mFont, "HIGH: XXXXX", 16, getVertexBufferObjectManager());
 		
 		mTime.setZIndex(12);
 		mTiles.setZIndex(12);
