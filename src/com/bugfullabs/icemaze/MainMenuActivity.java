@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.view.Display;
 import android.view.KeyEvent;
 
 import com.bugfullabs.icemaze.level.Level;
@@ -100,10 +99,15 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		
-		Display disp = getWindowManager().getDefaultDisplay();
+		//Display disp = getWindowManager().getDefaultDisplay();
 		
-		MainMenuActivity.cameraWidth = disp.getWidth();
-		MainMenuActivity.cameraHeight = disp.getHeight();
+		//MainMenuActivity.cameraWidth = disp.getWidth();
+		//MainMenuActivity.cameraHeight = disp.getHeight();
+		
+		
+		
+		cameraWidth = 800;
+		cameraHeight = 480;
 		
 		marginX = cameraWidth/2 - ((offsetX)*(NUMBER_OF_ITEMS_IN_ROW/2));
 		marginY = cameraHeight/2 - (((offsetY)*((NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW)/2))) + offsetY + 16;

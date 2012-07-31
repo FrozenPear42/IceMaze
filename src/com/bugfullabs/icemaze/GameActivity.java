@@ -59,12 +59,7 @@ import com.bugfullabs.icemaze.util.AlignedText;
  *
  */
 
-
-//FIXME: CHECK IF LEVEL IS NOT NULL
-//TODO: COUNT TIME
-//TODO: COUNT TILES CRASHED
 //TODO: FADE TRANSITION BETWEEN LEVELS
-//TODO: SCORE SYSTEM
 
 public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemClickListener, IOnSceneTouchListener{
 
@@ -102,12 +97,15 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private int tiles;
 	private Text mTime; 
 	private Text mTiles;
-	private AlignedText mScore;
+	private Text mTextScore;
+	private Text mTextHighScore;
 	
 	private static Level level;
 
 	private SharedPreferences mSettings;
-	//private SharedPreferences.Editor mEditor;
+	
+	private SharedPreferences mScore;
+	private SharedPreferences.Editor mScoreEditor;
 	private int steering;
 	
 	private Sprite[] stars;
@@ -169,10 +167,20 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	@Override
 	protected Scene onCreateScene() {
 		
+		if(level == null){
+			this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
+			this.finish();
+			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+		}
+			
+		
+		
 		/* SHARED PREFS CONFIG */
 		mSettings = getSharedPreferences(GameValues.SETTINGS_FILE, 0);
-		//mEditor = mSettings.edit();
 		this.steering = mSettings.getInt("steering", GameValues.STEERING_TOUCH);
+		
+		mScore = getSharedPreferences(GameValues.SCORE_FILE, 0);
+		mScoreEditor = mScore.edit();
 		
 		
 		/* STARS COUNTER */
@@ -247,11 +255,12 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		//SCORES	
 		mTime = new Text(40, 120, mFont, "TIME: XX:XX", 12, getVertexBufferObjectManager());
 		mTiles = new Text(340, 120, mFont, "TILES: XXX/XXX", 15, getVertexBufferObjectManager());
-		mScore = new AlignedText(0, 170, mFont, "SCORE: XXXXX", HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 30, this);
+		mTextScore = new Text(40, 170, mFont, "SCORE: XXXXX", 14, getVertexBufferObjectManager());
+		mTextHighScore = new Text(340, 170, mFont, "HIGH: XXXXX", 16, getVertexBufferObjectManager());
 		
 		mTime.setZIndex(12);
 		mTiles.setZIndex(12);
-		mScore.setZIndex(12);
+		mTextScore.setZIndex(12);
 		
 		AlignedText text = new AlignedText(0, 20, mBigFont, "GREAT!", HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 100, this);
 		
@@ -318,7 +327,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mScoreBackground.attachChild(text);
 		mScoreBackground.attachChild(mTime);
 		mScoreBackground.attachChild(mTiles);
-		mScoreBackground.attachChild(mScore);
+		mScoreBackground.attachChild(mTextScore);
+		mScoreBackground.attachChild(mTextHighScore);
+		
 		
 		mGameScene.registerTouchArea(next);
 		mGameScene.registerTouchArea(menu);
@@ -326,9 +337,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		mGameScene.sortChildren();
 		mGameScene.attachChild(mScoreBackground);
-		
-		
-		
+	
 		
 		return mGameScene;
 	}
@@ -420,8 +429,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		level = lvl;
 	}
 	
-	
-	
+
 	
 	/* GAME STEERING */
 	
@@ -592,7 +600,6 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	private void onEnd(){
 	
-	//TODO: SHOW SCORE SCENE
 		timerStarted = false;
 		
 		calculateScore();
@@ -612,7 +619,6 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		String max;
 		String get;
 		
-		//TIME
 		if(time/60 < 10)
 			min = "0" + Integer.toString(time/60);
 		else
@@ -627,30 +633,30 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		get = Integer.toString(tiles);
 		max = Integer.toString(level.getTiles());
-		
-		//TILES
-	/*	if(tiles < 10)
-			get = "  " + Integer.toString(tiles);
-		else if(tiles < 100)
-			get = " " + Integer.toString(tiles);
-		else
-			get = Integer.toString(tiles);
-		
-		if(level.getTiles() < 10)
-			max = "  " + Integer.toString(level.getTiles());
-		else if(level.getTiles() < 100)
-			max = " " + Integer.toString(level.getTiles());
-		else
-			max = Integer.toString(level.getTiles());
-		*/
+
 		mTiles.setText("TILES: " + get + "/" + max);
 		
 		float score;
-		score = (float)tiles/(float)level.getTiles();
+		score = 2.0f*((float)tiles/(float)level.getTiles());
 		score *= (1.0f/(float)time);
 		score *= 84000;
 		
-		mScore.setText("SCORE: " + Integer.toString((int)score));
+		if(mScore.getInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), 0) < (int) score){
+			mScoreEditor.putInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), (int) score);
+			mScoreEditor.commit();
+			mTextHighScore.setText("NEW HIGH SCORE");
+		}else{
+			mTextHighScore.setText("HIGH :" + Integer.toString((int) mScore.getInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), 0)));
+		}
+		
+		
+		if(tiles == maxTiles){
+		mScoreEditor.putBoolean("full" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), true);
+		}
+		
+		
+		
+		mTextScore.setText("SCORE: " + Integer.toString((int)score));
 		
 	}
 	
@@ -761,6 +767,4 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		}
 
-
-	
 }

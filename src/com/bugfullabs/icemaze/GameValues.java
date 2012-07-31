@@ -43,10 +43,12 @@ public interface GameValues{
 	public static final int STEERING_TOUCH = 0;
 	public static final int STEERING_SLIDE = 1;
 	
+	public static final String SCORE_FILE = "Scores";
 	
 	/* GAME VALUES */
 	
 	public static final int LEVELPACKS = 2;
+
 	
 	
 }
