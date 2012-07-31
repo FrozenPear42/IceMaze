@@ -13,6 +13,7 @@ public class GameScene extends Scene{
 	private Sprite[][] mSprites;
 	private Sprite[]   mStars;
 
+	@SuppressWarnings("unused")
 	private Level level;
 	
 	private BaseGameActivity mActivity;

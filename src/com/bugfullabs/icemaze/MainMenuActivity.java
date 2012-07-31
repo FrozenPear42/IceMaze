@@ -1,17 +1,16 @@
 package com.bugfullabs.icemaze;
 
-import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.SmoothCamera;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
-import org.andengine.entity.IEntity;
-import org.andengine.entity.modifier.FadeInModifier;
-import org.andengine.entity.modifier.FadeOutModifier;
-import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
-import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TextOptions;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.StrokeFont;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
@@ -19,7 +18,6 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.VerticalAlign;
-import org.andengine.util.modifier.IModifier;
 import org.andengine.util.texturepack.TexturePack;
 import org.andengine.util.texturepack.TexturePackLoader;
 import org.andengine.util.texturepack.TexturePackTextureRegion;
@@ -50,10 +48,10 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 
 	public static int cameraWidth;
 	public static int cameraHeight;
-	private Camera mCamera;
+	
+	private SmoothCamera mCamera;
 
-	private Scene mMainScene;
-	private Scene mOptionsScene; 
+	private Scene mScene;
 	
 	private BitmapTextureAtlas mFontTexture;
 	private StrokeFont mFont;
@@ -73,19 +71,19 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	private TexturePack mTexturePack;
 	private TiledTextureRegion mButtonLongRegion;
 	private TiledTextureRegion mButtonShortRegion;
-	
+	private TiledTextureRegion mButtonDoneRegion;
+	private TiledTextureRegion mButtonFullRegion;
 	
 	/* LEVEL GRID */
 	public static final int NUMBER_OF_ITEMS = 15;
 	public static final int NUMBER_OF_ITEMS_IN_ROW = 5;
 	
-	public static final float offsetX = 72;
+	public static final float offsetX = 84;
 	public static final float offsetY = 72;
 	
 	public static float marginX;
 	public static float marginY;
 	
-	private Scene mGridScene;
 
 	private int levelpackId = 1;
 
@@ -94,17 +92,16 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
   	private Button next;
   	private Button back;
 	
-	
-	
+  	private HUD mHud;
+
+  	private float cameraInitX;
+  	private float cameraInitY;
+  	
+	private SharedPreferences mScore;
+	private SharedPreferences.Editor mScoreEditor;
+
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-		
-		//Display disp = getWindowManager().getDefaultDisplay();
-		
-		//MainMenuActivity.cameraWidth = disp.getWidth();
-		//MainMenuActivity.cameraHeight = disp.getHeight();
-		
-		
 		
 		cameraWidth = 800;
 		cameraHeight = 480;
@@ -118,7 +115,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		mToogleSound = mSettings.getBoolean("sound", false);
 		mToogleMusic = mSettings.getBoolean("music", false);		
 
-		this.mCamera = new Camera(0, 0, MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight);
+		this.mCamera = new SmoothCamera(0, 0, MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight, 800, 800, 1.0f);
+
 		
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight), this.mCamera);
 	}
@@ -148,6 +146,13 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
         TexturePackTextureRegion textureRegion = mTextures.get(GameValues.BUTTONLONG_ID);
         mButtonLongRegion = TiledTextureRegion.create(mTexturePack.getTexture(), (int) textureRegion.getTextureX(), (int) textureRegion.getTextureY(), textureRegion.getSourceWidth(), textureRegion.getSourceHeight(), 2, 1);
         
+        textureRegion = mTextures.get(GameValues.BUTTONSHORTDONE_ID);
+        mButtonDoneRegion = TiledTextureRegion.create(mTexturePack.getTexture(), (int) textureRegion.getTextureX(), (int) textureRegion.getTextureY(), textureRegion.getSourceWidth(), textureRegion.getSourceHeight(), 2, 1);
+        
+        textureRegion = mTextures.get(GameValues.BUTTONSHORTFULL_ID);
+        mButtonFullRegion = TiledTextureRegion.create(mTexturePack.getTexture(), (int) textureRegion.getTextureX(), (int) textureRegion.getTextureY(), textureRegion.getSourceWidth(), textureRegion.getSourceHeight(), 2, 1);
+        
+        
      
         mFontTexture.load();
 		mFont.load();
@@ -156,50 +161,60 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 
 	@Override
 	protected Scene onCreateScene() {
-		this.mMainScene = new Scene();
-		mMainScene.setBackground(new SpriteBackground(new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager())));
 		
-		this.mOptionsScene = new Scene();
-		mOptionsScene.setBackground(new SpriteBackground(new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager())));
-		
-		mMainScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.TITLE_ID), getVertexBufferObjectManager()));
-		mOptionsScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.SETTINGS_ID), getVertexBufferObjectManager()));
+		mScore = getSharedPreferences(GameValues.SCORE_FILE, 0);
+		mScoreEditor = mScore.edit();
 		
 		
-		setLevelSelectGrid();
+		cameraInitX = mCamera.getCenterX();
+		cameraInitY = mCamera.getCenterY();
 		
 		
-		new Button(this, mMainScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f, 250, 75, getString(R.string.newgame), mButtonLongRegion, mFont){
+		this.mScene = new Scene();
+		mScene.setBackground(new SpriteBackground(new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager())));
+		
+		mScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.TITLE_ID), getVertexBufferObjectManager()));
+		mScene.attachChild(new Sprite(0, cameraHeight, mTextures.get(GameValues.SETTINGS_ID), getVertexBufferObjectManager()));
+		
+		
+		
+		/* PLAY */
+		new Button(this, mScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f, 250, 75, getString(R.string.newgame), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 			inStart = false;
-			changeSceneWithFade(mGridScene, 0.2f);
+
+			mCamera.setCenter(cameraInitX+cameraWidth, cameraInitY);
+			mHud.setVisible(true);
 			return true;
 			}
 		};
 		
-		new Button(this, mMainScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+75, 250, 75, getString(R.string.options), mButtonLongRegion, mFont){
+		/* SETTINGS */
+		new Button(this, mScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+75, 250, 75, getString(R.string.options), mButtonLongRegion, mFont){
 			@Override
-			public boolean onButtonPressed(){	
+			public boolean onButtonPressed(){
+			mCamera.setCenter(cameraInitX, cameraInitY+cameraHeight);
 			inStart = false;
-			changeSceneWithFade(mOptionsScene, 0.3f);	
-				
 			return true;
 			}
 		};
 		
-		new Button(this, mMainScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+150, 250, 75, getString(R.string.exit), mButtonLongRegion, mFont){
+		/* CREDITS */
+		new Button(this, mScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+150, 250, 75, getString(R.string.credits), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
-				MainMenuActivity.this.finish();
+				mCamera.setCenter(cameraInitX-cameraWidth, cameraInitY);
+				inStart = false;
 				return true;
 			}
 		};
 		
 		
 		
+		//FIXME:
 		
-		mMusicButton = new Button(this, mOptionsScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f, 250, 75, getString(R.string.music) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
+		mMusicButton = new Button(this, mScene, 110, cameraHeight + 180, 250, 75, getString(R.string.music) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 				mToogleMusic = !mToogleMusic;
@@ -216,7 +231,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		};
 		
 		
-		mSoundButton = new Button(this, mOptionsScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+75, 250, 75, getString(R.string.sound) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
+		mSoundButton = new Button(this, mScene, 110, cameraHeight+275, 250, 75, getString(R.string.sound) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 				mToogleSound = !mToogleSound;
@@ -232,53 +247,59 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			}
 		};
 		
-		new Button(this, mOptionsScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+150, 250, 75, getString(R.string.reset), mButtonLongRegion, mFont){
+		new Button(this, mScene, 440, cameraHeight+180, 250, 75, getString(R.string.reset), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
-				inStart = true;
-				changeSceneWithFade(mMainScene, 0.3f);	
+				mScoreEditor.clear();
+				mScoreEditor.commit();
+				
 				return true;
 			}
 		};
 		
 		
-		if(mToogleMusic != true)
-		{
-		this.mMusicButton.setText(getString(R.string.music)+  ": " + getString(R.string.no));
-		}
-		
-		if(mToogleSound != true)
-		{
-			this.mSoundButton.setText(getString(R.string.sound) + ": " + getString(R.string.no));
-		}
-		
-		
-		return mMainScene;
-	}
-	
-	
-	
-	private void setLevelSelectGrid() {
-    	
-	
-	  	mGridScene = new Scene();
+		new Button(this, mScene, 440, cameraHeight+275, 250, 75, "Steering", mButtonLongRegion, mFont){
+			@Override
+			public boolean onButtonPressed(){	
 
-	  	
-	  	
-	  	//final Sprite bg = new Sprite(0, 0, mBackgroundTextureRegion, getVertexBufferObjectManager());
-	  	//bg.setWidth(cameraWidth);
-	  	//bg.setHeight(cameraHeight);
-	  	//mGridScene.setBackground(new SpriteBackground(bg));
-	  	mGridScene.setBackground(new SpriteBackground(new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager())));
+				return true;
+			}
+		};
 		
-		mGridScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.LEVELSELECT_ID), getVertexBufferObjectManager()));
+		Sprite mBackButton = new Sprite(0, cameraHeight *2 - 72 , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
+			
+			@Override
+			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+				if(pSceneTouchEvent.isActionUp()){
+					
+					mCamera.setCenter(cameraInitX, cameraInitY);
+					
+					return true;
+				}
+			return false;
+			}
+			
+		};
 		
+		mScene.attachChild(mBackButton);
+		mScene.registerTouchArea(mBackButton);
 
-	  	final AlignedText levelpack = new AlignedText(0,  marginY - 72, mFont, "LEVELPACK: " + Integer.toString(levelpackId), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth, 24, this);
+
+		mScene.attachChild(new Sprite(-cameraWidth, 0, mTextures.get(GameValues.CREDITS_ID), getVertexBufferObjectManager()));
+		Text credits = new Text(-cameraWidth + 20, cameraHeight/2-32, this.mFont, getString(R.string.creditstext), getVertexBufferObjectManager());
+		credits.setTextOptions(new TextOptions(HorizontalAlign.LEFT));
+		mScene.attachChild(credits);
+		
+		
+		
+		/* LEVEL SELECT GRID */
 	  	
-	  	mGridScene.attachChild(levelpack);	  
-
-	  	back = new Button(this, mGridScene, marginX - (36 + 128) , marginY + offsetY -36, 72, 72, "-", mButtonShortRegion, mFont){
+	  	mHud = new HUD();
+	  	
+	  	final AlignedText levelpack = new AlignedText(0,  marginY - 96, mFont, "LEVELPACK: " + Integer.toString(levelpackId), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth, 24, this);
+	  	
+  
+	  	back = new Button(this, mHud, marginX - (36 + 128) , marginY + offsetY -36, 72, 72, "-", mButtonShortRegion, mFont){
 	  		@Override
 	  		public boolean onButtonPressed(){
 				
@@ -286,6 +307,9 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  			levelpackId--;	
 	  			levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
 	  			next.setVisible(true);	
+	  			
+	  			mCamera.setCenter(mCamera.getCenterX()-cameraWidth, mCamera.getCenterY());
+	  			
 	  			if(levelpackId <= 1){
 	  			back.setVisible(false);
 	  			}
@@ -294,9 +318,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			  }
 	  	};
 	  	
-	  	back.setVisible(false);
 	  	
-	  	next = new Button(this, mGridScene,  cameraWidth - marginX - 36 + 128 , marginY + offsetY -36, 72, 72, "+", mButtonShortRegion, mFont){
+	  	next = new Button(this, mHud,  cameraWidth - marginX - 36 + 128 , marginY + offsetY -36, 72, 72, "+", mButtonShortRegion, mFont){
 	  		@Override
 	  		public boolean onButtonPressed(){
 	  			
@@ -304,43 +327,81 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  			levelpackId++;
 	  			levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
 	  			back.setVisible(true);
+
+	  			mCamera.setCenter(mCamera.getCenterX()+cameraWidth, mCamera.getCenterY());
+	  			
 	  			if(levelpackId >= GameValues.LEVELPACKS){
 	  			this.setVisible(false);
 	  			}
 				}
 				return true;
 			  }
-
 	  	};
 	  	
-	
+	  	back.setVisible(false);
+	  	
+	  	mHud.attachChild(levelpack);
+	  	mHud.attachChild(new Sprite(0, 0, mTextures.get(GameValues.LEVELSELECT_ID), getVertexBufferObjectManager()));
+	  	
+	  	mHud.setVisible(false);
+	  	mCamera.setHUD(mHud);
+	  	
+	  	
+	  	
+	  	/* CREATE GRID */
+	  	
 	  	  int i = 0;
-
 	  	  
+	  	  for(int z = 0; z < GameValues.LEVELPACKS; z++){
+	  	  i = 0;
 	  	  for(int j = 0; j < (NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW); j++){
-
 				for(int k = 0; k < NUMBER_OF_ITEMS_IN_ROW; k++){
-
 				final int id = i + 1;
-				
 				//TODO: DONE LEVELS
 				
-				new Button(this, mGridScene,  marginX + (k * offsetX) - 36, marginY + (j * offsetY)- 36, 72, 72, Integer.toString(id),  mButtonShortRegion, mFont){
+				TiledTextureRegion buttonRegion;
+				
+				if(mScore.getInt("score" + Integer.toString(z+1) + "_" + Integer.toString(id), 0) > 0){
+					buttonRegion = mButtonDoneRegion;
+				if(mScore.getBoolean("full" + Integer.toString(z+1) + "_" + Integer.toString(id), false)){
+						buttonRegion = mButtonFullRegion;
+				}
+				}else{
+					buttonRegion = mButtonShortRegion;
+				}
+				
+					
+				new Button(this, mScene, (z+1)*cameraWidth + marginX + (k * offsetX) - 36, marginY + (j * offsetY)- 36, 72, 72, Integer.toString(id),buttonRegion , mFont){
 	    			  @Override
 	    			  public boolean onButtonPressed(){
 	    				MainMenuActivity.this.onLevelSelected(id, levelpackId);
 	    				return true;
 	    			  }
 	    		  };
-	    		  
+ 
 	    		  i++;
 				}
 			}
+	  	  
+	  	  
+	  	  }
+		
+		
+		
+		
+		
+		if(mToogleMusic != true)
+			this.mMusicButton.setText(getString(R.string.music)+  ": " + getString(R.string.no));
+		
+		if(mToogleSound != true)
+			this.mSoundButton.setText(getString(R.string.sound) + ": " + getString(R.string.no));
+		
+		
+		return mScene;
+	}
+	
+	
 
-
-	  	  this.mEngine.setScene(mGridScene);
-
-	    }
 
 
 
@@ -368,8 +429,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			if(pKeyCode == KeyEvent.KEYCODE_BACK  && pEvent.getAction() == KeyEvent.ACTION_DOWN) {
 				
 				if(!inStart){
-
-				changeSceneWithFade(mMainScene, 0.2f);	
+				mCamera.setCenter(cameraInitX, cameraInitY);
+				mHud.setVisible(false);
 				inStart = true;
 				}else{
 				MainMenuActivity.this.finish();
@@ -382,44 +443,6 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		}
 
 	
-	
-	
-	private void changeSceneWithFade(final Scene s, final float time){
-	Scene cs = this.getEngine().getScene();
 
-	final Rectangle black = new Rectangle(0, 0, cameraWidth, cameraHeight, this.getVertexBufferObjectManager());
-	black.setColor(0.0f, 0.0f, 0.0f);
-	black.setAlpha(0.0f);
-	
-	cs.attachChild(black);
-	
-	black.registerEntityModifier(new FadeInModifier(time, new IEntityModifierListener() {
-		
-		@Override
-		public void onModifierStarted(IModifier<IEntity> arg0, IEntity arg1) {	
-		}
-		
-		@Override
-		public void onModifierFinished(IModifier<IEntity> arg0, IEntity arg1) {
-		
-			black.detachSelf();
-			s.attachChild(black);
-			MainMenuActivity.this.getEngine().setScene(s);
-			black.registerEntityModifier(new FadeOutModifier(time, new IEntityModifierListener() {
-				
-				@Override
-				public void onModifierStarted(IModifier<IEntity> arg0, IEntity arg1) {
-				}
-				
-				@Override
-				public void onModifierFinished(IModifier<IEntity> arg0, IEntity arg1) {
-					black.detachSelf();
-				}
-			}));
-		}
-	}));
-	
-	
-	}
 	
 }

@@ -30,13 +30,17 @@ public interface GameValues{
 	
 	/* MAIN MENU */
 
-	public static final int BG_ID = 0;
-	public static final int BUTTONLONG_ID = 1;
-	public static final int BUTTONSHORT_ID = 2;
-	public static final int BUTTONSHORTDONE_ID = 3;
-	public static final int LEVELSELECT_ID = 4;
-	public static final int SETTINGS_ID = 5;
-	public static final int TITLE_ID = 6;
+	public static final int BACK_M_ID = 0;
+	public static final int BG_ID = 1;
+	public static final int BUTTONLONG_ID = 2;
+	public static final int BUTTONSHORT_ID = 3;
+	public static final int BUTTONSHORTDONE_ID = 4;
+	public static final int BUTTONSHORTFULL_ID = 5;
+	public static final int CREDITS_ID = 6;
+	public static final int LEVELSELECT_ID = 7;
+	public static final int SETTINGS_ID = 8;
+	public static final int TITLE_ID = 9;
+
 	
 	/* SHARED PREFS */
 	public static final String SETTINGS_FILE = "Settings";

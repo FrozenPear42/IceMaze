@@ -67,6 +67,9 @@ public class Button{
 		bgButton.setWidth(width);
 		bgButton.setHeight(height);
 		
+		bgButton.setZIndex(9);
+		textButton.setZIndex(9);
+		scene.sortChildren();
 	    scene.registerTouchArea(bgButton);
 		scene.attachChild(bgButton);
 		scene.attachChild(textButton);
