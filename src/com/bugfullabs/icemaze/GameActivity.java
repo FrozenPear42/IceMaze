@@ -3,6 +3,8 @@ package com.bugfullabs.icemaze;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
@@ -19,6 +21,7 @@ import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
 import org.andengine.entity.scene.menu.item.IMenuItem;
 import org.andengine.entity.scene.menu.item.SpriteMenuItem;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.StrokeFont;
 import org.andengine.opengl.texture.TextureOptions;
@@ -93,6 +96,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private Sprite mRestartButton;
 
 	private Sprite mScoreBackground;
+	private int time;
+	private boolean timerStarted = false;
+	private boolean nextLevel = false;
+	private int tiles;
+	private Text mTime; 
+	private Text mTiles;
+	private AlignedText mScore;
 	
 	private static Level level;
 
@@ -104,7 +114,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	private boolean canExit = false;
 
-	private boolean nextLevel = false;
+	private Text mCTiles;
+	private int maxTiles;
 	
 	/* BASE ENGINE & GAME FUNCTIONS */
 	
@@ -129,7 +140,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 
 	mBigFontTexture = new BitmapTextureAtlas(getTextureManager() ,256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 	typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
-    mBigFont = new StrokeFont(getFontManager(), mFontTexture, typeface, 60, true, Color.WHITE, 2, Color.BLACK);	
+    mBigFont = new StrokeFont(getFontManager(), mBigFontTexture, typeface, 60, true, Color.WHITE, 2, Color.BLACK);	
 	mBigFontTexture.load();
     mBigFont.load();
     
@@ -171,6 +182,18 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		/* MENU SCENE */
 		createMenuScene();	
 		
+		/* TIMER */
+		
+		time = 0;
+		
+		getEngine().registerUpdateHandler(new TimerHandler(1.0f, true, new ITimerCallback() {
+			@Override
+			public void onTimePassed(TimerHandler pTimerHandler) {
+				if(timerStarted)
+				time++;
+			}
+		}));
+		
 		
 		/* GAME SCENE */
 		mGameScene = LevelSceneFactory.createScene(this, level, mGameTexturePack);
@@ -204,9 +227,15 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mRestartButton.setZIndex(10);
 		mGameScene.registerTouchArea(mRestartButton);
 		mGameScene.attachChild(mRestartButton);
+		
+		maxTiles = level.getTiles();
+		mCTiles = new Text(32, 0, mFont, "TILES: 0/" + Integer.toString(maxTiles), 12, getVertexBufferObjectManager());
+		mCTiles.setZIndex(10);
+		mGameScene.attachChild(mCTiles);
+		
 		mGameScene.setOnSceneTouchListener(this);
 		this.mGameScene.setTouchAreaBindingOnActionDownEnabled(true);
-		
+	
 		
 		
 		
@@ -214,9 +243,23 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mScoreBackground = new Sprite(100, -(cameraHeight-100), cameraWidth-200, cameraHeight-100,  mMenuTextures.get(GameValues.SCOREBG_ID),getVertexBufferObjectManager());
 		mScoreBackground.setZIndex(11);
 
-			AlignedText text = new AlignedText(0, 20, mBigFont, "GREAT!", HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 100, this);
 		
-			Sprite restart = new Sprite(92, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
+		//SCORES	
+		mTime = new Text(40, 120, mFont, "TIME: XX:XX", 12, getVertexBufferObjectManager());
+		mTiles = new Text(340, 120, mFont, "TILES: XXX/XXX", 15, getVertexBufferObjectManager());
+		mScore = new AlignedText(0, 170, mFont, "SCORE: XXXXX", HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 30, this);
+		
+		mTime.setZIndex(12);
+		mTiles.setZIndex(12);
+		mScore.setZIndex(12);
+		
+		AlignedText text = new AlignedText(0, 20, mBigFont, "GREAT!", HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 100, this);
+		
+		text.setZIndex(13);
+		
+		
+		//BUTTONS	
+		Sprite restart = new Sprite(92, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				if(pSceneTouchEvent.isActionUp()){	
@@ -273,6 +316,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mScoreBackground.attachChild(menu);
 		mScoreBackground.attachChild(next);
 		mScoreBackground.attachChild(text);
+		mScoreBackground.attachChild(mTime);
+		mScoreBackground.attachChild(mTiles);
+		mScoreBackground.attachChild(mScore);
 		
 		mGameScene.registerTouchArea(next);
 		mGameScene.registerTouchArea(menu);
@@ -390,6 +436,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 			if(touchEvent.getAction() == TouchEvent.ACTION_DOWN)
 			{	
+				
+				timerStarted = true;
 			
 				float xDown = touchEvent.getX();
 				float yDown = touchEvent.getY();
@@ -505,6 +553,11 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				
 				player.move(dir);
 				
+				if(id == GameValues.ONESTEP_ID || id == GameValues.BLANK_ID)
+					tiles++;
+				
+				mCTiles.setText("TILES: " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
+				
 				mGameScene.addItem(col, row, id);
 				
 				level.setItem(col, row, id);
@@ -540,15 +593,74 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private void onEnd(){
 	
 	//TODO: SHOW SCORE SCENE
+		timerStarted = false;
+		
+		calculateScore();
+		
 		mScoreBackground.registerEntityModifier(new MoveYModifier(2.0f, mScoreBackground.getY(), 50, EaseBackOut.getInstance()));
 		
+		time = 0;
+		tiles = 0;
+	}
+	
+	
+	private void calculateScore(){
+		
+		String min;
+		String sec;
+		
+		String max;
+		String get;
+		
+		//TIME
+		if(time/60 < 10)
+			min = "0" + Integer.toString(time/60);
+		else
+			min = Integer.toString(time/60);
+		
+		if(time%60 < 10)
+			sec = "0" + Integer.toString(time%60);
+		else
+			sec = Integer.toString(time%60);
+		
+		mTime.setText("TIME: " + min + ":" + sec);
+		
+		get = Integer.toString(tiles);
+		max = Integer.toString(level.getTiles());
+		
+		//TILES
+	/*	if(tiles < 10)
+			get = "  " + Integer.toString(tiles);
+		else if(tiles < 100)
+			get = " " + Integer.toString(tiles);
+		else
+			get = Integer.toString(tiles);
+		
+		if(level.getTiles() < 10)
+			max = "  " + Integer.toString(level.getTiles());
+		else if(level.getTiles() < 100)
+			max = " " + Integer.toString(level.getTiles());
+		else
+			max = Integer.toString(level.getTiles());
+		*/
+		mTiles.setText("TILES: " + get + "/" + max);
+		
+		float score;
+		score = (float)tiles/(float)level.getTiles();
+		score *= (1.0f/(float)time);
+		score *= 84000;
+		
+		mScore.setText("SCORE: " + Integer.toString((int)score));
 		
 	}
 	
 	private void onGameRestart(){
+		timerStarted = false;
+		time = 0;
+		tiles = 0;
 		canExit = false;
 		starCounter = 0;
-		
+		mCTiles.setText("TILES: 0/" + Integer.toString(maxTiles));
 		for(int i = 0; i < 3; i++){
 			if(stars[i] != null){
 			stars[i].detachSelf();
@@ -592,7 +704,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		if(levelID < 15){
 			
 			level = LevelFileReader.getLevelFromFile(GameActivity.this, "level_"+ Integer.toString(levelpackID) + "_" +  Integer.toString(levelID+1));	
-			
+			maxTiles = level.getTiles();
+			mCTiles.setText("TILES: 0/" + Integer.toString(maxTiles));
 			LevelSceneFactory.redraw(GameActivity.this, mGameScene, level, mGameTexturePack);
 		
 			

@@ -36,6 +36,7 @@ public class Level{
 	private int stars[][];
 	private ArrayList<EndEntity> mEnds;
 	
+	public int tiles;
 	
 public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
@@ -58,6 +59,7 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		this.id = id;
 		this.levelpackId = levelpackId;
+		tiles = 0;
 	}
 	
 	public void addItem(final int column, final int row, final int id){
@@ -168,13 +170,27 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 	
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
-				if(level_pattern[i][j] == GameValues.END_ID){
+				
+				if(level_pattern[i][j] == GameValues.END_ID)
 					mEnds.add(new EndEntity(i, j));
-				}
+				else
+				if(level_pattern[i][j] == GameValues.ONESTEP_ID)
+					tiles++;
+				else
+				if(level_pattern[i][j] == GameValues.TWOSTEP_ID)
+					tiles += 2;
+				
 			}
+			
+			
 		}
 		
 	}
+	
+	public int getTiles(){
+		return tiles;
+	}
+	
 	
 	public EndEntity getEnd(int id){
 		return mEnds.get(id);
