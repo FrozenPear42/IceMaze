@@ -105,6 +105,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	private SharedPreferences mScore;
 	private SharedPreferences.Editor mScoreEditor;
 
+	private AlignedText levelpack;
+	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		
@@ -308,7 +310,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  	
 	  	mHud = new HUD();
 	  	
-	  	final AlignedText levelpack = new AlignedText(0,  marginY - 96, mFont, "LEVELPACK: " + Integer.toString(levelpackId), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth, 24, this);
+	  	levelpack = new AlignedText(0,  marginY - 96, mFont, "LEVELPACK: " + Integer.toString(levelpackId), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth, 24, this);
 	  	
   
 	  	back = new Button(this, mHud, marginX - (36 + 128) , marginY + offsetY -36, 72, 72, "-", mButtonShortRegion, mFont){
@@ -374,12 +376,13 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 				TiledTextureRegion buttonRegion;
 				
 				if(mScore.getInt("score" + Integer.toString(z+1) + "_" + Integer.toString(id), 0) > 0){
-					buttonRegion = mButtonDoneRegion;
 				if(mScore.getBoolean("full" + Integer.toString(z+1) + "_" + Integer.toString(id), false)){
-						buttonRegion = mButtonFullRegion;
+				buttonRegion = mButtonFullRegion;
+				}else{
+				buttonRegion = mButtonDoneRegion;
 				}
 				}else{
-					buttonRegion = mButtonShortRegion;
+				buttonRegion = mButtonShortRegion;
 				}
 				
 					
@@ -444,6 +447,10 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 				if(!inStart){
 				mCamera.setCenter(cameraInitX, cameraInitY);
 				mHud.setVisible(false);
+				levelpackId = 1;
+				next.setVisible(true);
+				back.setVisible(false);
+				levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
 				inStart = true;
 				}else{
 				MainMenuActivity.this.finish();

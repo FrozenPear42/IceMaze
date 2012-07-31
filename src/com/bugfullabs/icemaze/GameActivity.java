@@ -9,11 +9,8 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.IEntity;
-import org.andengine.entity.modifier.FadeInModifier;
-import org.andengine.entity.modifier.FadeOutModifier;
 import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.andengine.entity.modifier.MoveYModifier;
-import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.menu.MenuScene;
@@ -641,17 +638,22 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		score *= (1.0f/(float)time);
 		score *= 84000;
 		
+		Debug.i(Integer.toString(tiles));
+		Debug.i(Integer.toString(maxTiles));
+		
+		
+		if(tiles == maxTiles){
+			mScoreEditor.putBoolean("full" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), true);
+			mScoreEditor.commit();
+			}
+			
+		
 		if(mScore.getInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), 0) < (int) score){
 			mScoreEditor.putInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), (int) score);
 			mScoreEditor.commit();
 			mTextHighScore.setText("NEW HIGH SCORE");
 		}else{
 			mTextHighScore.setText("HIGH :" + Integer.toString((int) mScore.getInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), 0)));
-		}
-		
-		
-		if(tiles == maxTiles){
-		mScoreEditor.putBoolean("full" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), true);
 		}
 		
 		
@@ -701,7 +703,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			stars[i].detachSelf();
 			stars[i] = null;
 			}
-			nextLevel = false;
+
 		}
 		
 		level.getPlayer().detachSelf();
@@ -714,6 +716,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			mCTiles.setText("TILES: 0/" + Integer.toString(maxTiles));
 			LevelSceneFactory.redraw(GameActivity.this, mGameScene, level, mGameTexturePack);
 		
+	
 			
 			}else{
 				
@@ -721,50 +724,10 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				GameActivity.this.finish();
 				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			}
-		
+		nextLevel = false;
 		
 	}
 	
 	
 	
-	@SuppressWarnings("unused")
-	private void changeSceneWithFade(final Scene s, final float time){
-		
-		Scene cs = this.getEngine().getScene();
-
-		final Rectangle black = new Rectangle(0, 0, cameraWidth, cameraHeight, this.getVertexBufferObjectManager());
-		black.setColor(0.0f, 0.0f, 0.0f);
-		black.setAlpha(0.0f);
-		
-		cs.attachChild(black);
-		
-		black.registerEntityModifier(new FadeInModifier(time, new IEntityModifierListener() {
-			
-			@Override
-			public void onModifierStarted(IModifier<IEntity> arg0, IEntity arg1) {	
-			}
-			
-			@Override
-			public void onModifierFinished(IModifier<IEntity> arg0, IEntity arg1) {
-			
-				black.detachSelf();
-				s.attachChild(black);
-				GameActivity.this.getEngine().setScene(s);
-				black.registerEntityModifier(new FadeOutModifier(time, new IEntityModifierListener() {
-					
-					@Override
-					public void onModifierStarted(IModifier<IEntity> arg0, IEntity arg1) {
-					}
-					
-					@Override
-					public void onModifierFinished(IModifier<IEntity> arg0, IEntity arg1) {
-						black.detachSelf();
-					}
-				}));
-			}
-		}));
-		
-		
-		}
-
 }
