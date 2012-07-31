@@ -234,7 +234,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mGameScene.attachChild(mRestartButton);
 		
 		maxTiles = level.getTiles();
-		mCTiles = new Text(32, 0, mFont, "TILES: 0/" + Integer.toString(maxTiles), 12, getVertexBufferObjectManager());
+		mCTiles = new Text(32, 0, mFont, "TILES: 0/" + Integer.toString(maxTiles), 15, getVertexBufferObjectManager());
 		mCTiles.setZIndex(10);
 		mGameScene.attachChild(mCTiles);
 		
