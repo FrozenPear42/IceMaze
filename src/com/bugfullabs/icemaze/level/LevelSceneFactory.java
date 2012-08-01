@@ -30,15 +30,15 @@ public class LevelSceneFactory{
 		    	  for(int j = 0; j < level.getHeight(); j++){
 		    	  
 			  		  levelScene.addItem(i, j, level.getItem(i, j));
-	
+			  		  
+			  		  if(level.getAtts(i, j) != 0){
+			  			  levelScene.addAttsItem(i, j, level.getAtts(i, j));
+			  		  }
 			  		  
 		    	}
 			 }	
 			
-			for(int i = 0; i < 3; i++){
-				levelScene.addStar(i, level.getStarColumn(i), level.getStarRow(i));
-			}
-			
+
   		  	level.createPlayer(a.getVertexBufferObjectManager(), txl.get(GameValues.PLAYER_ID));
   		  	level.getPlayer().attachToScene(levelScene);
 			level.getPlayer().setZIndex(2);
@@ -57,15 +57,14 @@ public class LevelSceneFactory{
 	    	  
 		  		  s.addItem(i, j, l.getItem(i, j));
 
-		  		  
+		  		  if(l.getAtts(i, j) != 0){
+			  			
+		  			  s.addAttsItem(i, j, l.getAtts(i, j));
+		  			  
+		  		  }
 	    	}
 		 }	
 		
-		
-		
-			for(int i = 0; i < 3; i++){
-			s.addStar(i, l.getStarColumn(i), l.getStarRow(i));
-			}
 		
 		
 		  	l.createPlayer(a.getVertexBufferObjectManager(), tx.getTexturePackTextureRegionLibrary().get(GameValues.PLAYER_ID));

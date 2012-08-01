@@ -43,7 +43,7 @@ import com.bugfullabs.icemaze.util.Button;
  *
  */
 
-//TODO: REDRAW GRID AFTER RESET & GAME
+//TODO: REDRAW GRID AFTER RESET
 
 public class MainMenuActivity extends SimpleBaseGameActivity{
 

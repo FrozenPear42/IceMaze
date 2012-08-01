@@ -181,7 +181,7 @@
 <item column="15" id="6" attribute="0"></item>
 <item column="16" id="6" attribute="0"></item>
 <item column="17" id="6" attribute="0"></item>
-<item column="18" id="6" attribute="0"></item>
+<item column="18" id="6" attribute="5"></item>
 <item column="19" id="1" attribute="0"></item>
 <item column="20" id="1" attribute="0"></item>
 <item column="21" id="1" attribute="0"></item>
@@ -193,7 +193,7 @@
 <item column="0" id="1" attribute="0"></item>
 <item column="1" id="1" attribute="0"></item>
 <item column="2" id="1" attribute="0"></item>
-<item column="3" id="6" attribute="0"></item>
+<item column="3" id="6" attribute="5"></item>
 <item column="4" id="6" attribute="0"></item>
 <item column="5" id="6" attribute="0"></item>
 <item column="6" id="6" attribute="0"></item>
@@ -252,7 +252,7 @@
 <item column="5" id="1" attribute="0"></item>
 <item column="6" id="1" attribute="0"></item>
 <item column="7" id="1" attribute="0"></item>
-<item column="8" id="6" attribute="0"></item>
+<item column="8" id="6" attribute="5"></item>
 <item column="9" id="6" attribute="0"></item>
 <item column="10" id="6" attribute="0"></item>
 <item column="11" id="6" attribute="0"></item>
@@ -407,8 +407,5 @@
 </row>
 <players number="1">
 <player color="0" column="15" row="11" id="0"></player>
-</players><stars>
-<star id="0" column="8" row="9"></star>
-<star id="1" column="18" row="6"></star>
-<star id="2" column="3" row="7"></star>
-</stars></level>
+</players>
+</level>

@@ -22,7 +22,12 @@ import com.bugfullabs.icemaze.game.PlayerEntity;
 
 public class Level{
 	
-	private int level_pattern[][];
+	
+	public static final int ITEM = 0;
+	public static final int ATTS = 0;
+	
+	
+	private int level_pattern[][][];
 	private int width;
 	private int height;		
 	private int id;
@@ -33,17 +38,16 @@ public class Level{
 	private int playerX;
 	private int playerY;
 	
-	private int stars[][];
 	private ArrayList<EndEntity> mEnds;
 	private int teleports[][];
 
+	
 	
 	public int tiles;
 	
 public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		teleports = new int[2][2];
-		stars = new int[3][3];
 		mEnds = new ArrayList<EndEntity>();
 		
 		width = columns;
@@ -51,11 +55,12 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		this.levelTexture = texture;
 		
-		level_pattern = new int[columns][rows];
+		level_pattern = new int[columns][rows][2];
 		
 		for (int i = 0; i < columns; i++){
 			for (int j = 0; j < rows; j++){				
-				level_pattern[i][j] = GameValues.BLANK_ID;
+				level_pattern[i][j][0] = GameValues.BLANK_ID;
+				level_pattern[i][j][1] = 0;		
 			}	
 		
 		}
@@ -75,9 +80,31 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 			return;
 		}
 		
-		level_pattern[column][row] = id;
+		level_pattern[column][row][0] = id;
 		
 	}
+	
+	
+	public void addItem(final int column, final int row, final int id, final int atts){
+		
+		if(!isCorrect(column, row)){
+			return;
+		}
+		
+		level_pattern[column][row][0] = id;
+		level_pattern[column][row][1] = atts;
+	}
+	
+	public void setItem(final int column, final int row, final int id, final int atts){
+		
+		if(!isCorrect(column, row)){
+			return;
+		}
+		
+		level_pattern[column][row][0] = id;
+		level_pattern[column][row][1] = atts;
+	}
+	
 	
 	public void setItem(final int column, final int row, final int id){
 		
@@ -85,7 +112,7 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 			return;
 		}
 		
-		level_pattern[column][row] = id;
+		level_pattern[column][row][0] = id;
 		
 	}
 	
@@ -106,7 +133,7 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		if(!isCorrect(column, row)){
 			return -1;
 		}
-		return level_pattern[column][row];
+		return level_pattern[column][row][0];
 	}
 
 	
@@ -145,46 +172,29 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		return !(column < 0 || row < 0 || column >= width || row >= height);
 	}
 
-	public void addStar(int id, int column, int row) {
-		stars[id][0] = column;
-		stars[id][1] = row;
-		stars[id][2] = 0;
+
+	
+	public int getAtts(int c, int r){
+		return level_pattern[c][r][1];
+		}
+	
+	public void setAtts(int c, int r, int a){
+		level_pattern[c][r][1] = a;
 	}
 	
-	
-	public int getStarColumn(int id){
-		return stars[id][0];
-	}
-	
-	public int getStarRow(int id){
-		return stars[id][1];
-	}
-	
-	public boolean getStarCollected(int id){
-		return stars[id][2] == 1;
-	}
-	
-	public int getStarId(int c, int r){
-		for(int i = 0; i < 3 ; i++){
-			if(stars[i][0] == c && stars[i][1] == r){
-				return i;
-				}
-			}
-		return -1;
-	}
 	
 	public void findEnds(){
 	
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
 				
-				if(level_pattern[i][j] == GameValues.END_ID)
+				if(level_pattern[i][j][0] == GameValues.END_ID)
 					mEnds.add(new EndEntity(i, j));
 				else
-				if(level_pattern[i][j] == GameValues.ONESTEP_ID)
+				if(level_pattern[i][j][0] == GameValues.ONESTEP_ID)
 					tiles++;
 				else
-				if(level_pattern[i][j] == GameValues.TWOSTEP_ID)
+				if(level_pattern[i][j][0] == GameValues.TWOSTEP_ID)
 					tiles += 2;
 				
 			}
@@ -210,14 +220,14 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 			int c = mEnds.get(i).getColumn();
 			int r = mEnds.get(i).getRow();
 			s.addItem(c, r, GameValues.END_ID);
-			level_pattern[c][r] = GameValues.END_ID;
+			level_pattern[c][r][0] = GameValues.END_ID;
 		}
 		}else{
 		for(int i = 0; i < mEnds.size(); i++){
 			int c = mEnds.get(i).getColumn();
 			int r = mEnds.get(i).getRow();
 			s.addItem(c, r, GameValues.END_UN_ID);
-			level_pattern[c][r] = GameValues.END_UN_ID;
+			level_pattern[c][r][0] = GameValues.END_UN_ID;
 		}		
 		}
 		
@@ -252,31 +262,6 @@ public int getTeleportId(int nCol, int nRow) {
 	}
 	
 	
-	
-	public void setStarCollected(int id, boolean col){
-		if(col)
-			stars[id][2] = 1;
-		else
-			stars[id][2] = 0;
-	}
-	
-	public boolean isStar(int c, int r){
 		
-		for(int i = 0; i < 3 ; i++){
-			if(stars[i][0] == c && stars[i][1] == r){
-				
-				if(!getStarCollected(i)){
-				setStarCollected(i, true);
-				return true;
-				}
-			}
-		}
-		
-		return false;
-	}
 
-	
-	
-	
-	
 }

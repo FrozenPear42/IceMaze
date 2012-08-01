@@ -46,7 +46,7 @@ public class Splash extends SimpleBaseGameActivity{
 	private ITextureRegion mBugfullabsLogo;
 	private ITextureRegion mAndEngineLogo;
 	
-	private static final float SPLASH_DURATION = 0.3f;
+	private static final float SPLASH_DURATION = 0.5f;
 	
 	public EngineOptions onCreateEngineOptions() {
 

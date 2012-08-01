@@ -10,7 +10,7 @@ import com.bugfullabs.icemaze.level.Level;
 
 public class GameScene extends Scene{
 
-	private Sprite[][] mSprites;
+	private Sprite[][][] mSprites;
 	private Sprite[]   mStars;
 
 	@SuppressWarnings("unused")
@@ -35,7 +35,7 @@ public class GameScene extends Scene{
 	
 	level = l;
 	
-	mSprites = new Sprite[width][height];
+	mSprites = new Sprite[width][height][2];
 	mStars = new Sprite[3];
 	
 	}
@@ -44,10 +44,10 @@ public class GameScene extends Scene{
 	public void addItem(int column, int row, int item){
 		
 		if(mSprites[column][row] != null)
-			this.detachChild(mSprites[column][row]);
+			this.detachChild(mSprites[column][row][0]);
 		
-		 mSprites[column][row] = new Sprite(column*32, row*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
-		 this.attachChild(mSprites[column][row]);
+		 mSprites[column][row][0] = new Sprite(column*32, row*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
+		 this.attachChild(mSprites[column][row][0]);
 		 this.sortChildren();
 	
 	}
@@ -59,6 +59,20 @@ public class GameScene extends Scene{
 		mStars[id].setZIndex(1);
 		this.sortChildren();
 	}
+	
+	public void addAttsItem(int c, int r, int item){
+		
+		 mSprites[c][r][1] = new Sprite(c*32, r*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
+		 mSprites[c][r][1].setZIndex(1);
+		 this.attachChild(mSprites[c][r][1]);
+		 this.sortChildren();
+		
+	}
+	
+	public void removeAttsItem(int c, int r){
+		this.detachChild(mSprites[c][r][1]);
+		mSprites[c][r][1] = null;
+		}
 	
 	public void removeStar(int id){
 		this.detachChild(mStars[id]);
@@ -75,8 +89,12 @@ public class GameScene extends Scene{
 		
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
-				this.detachChild(mSprites[i][j]);
-				mSprites[i][j] = null;
+				for(int k = 0; k < 2; k ++){
+				
+				this.detachChild(mSprites[i][j][k]);
+				mSprites[i][j][k] = null;
+			
+				}
 			}
 		}
 	}

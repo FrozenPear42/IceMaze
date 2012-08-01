@@ -58,6 +58,7 @@ import com.bugfullabs.icemaze.util.AlignedText;
 
 //TODO: FADE TRANSITION BETWEEN LEVELS
 
+
 public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemClickListener, IOnSceneTouchListener{
 
 	private static final int MENU_RESET = 0;
@@ -111,6 +112,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 
 	private Text mCTiles;
 	private int maxTiles;
+	private boolean isKey = false;
 	
 	/* BASE ENGINE & GAME FUNCTIONS */
 	
@@ -492,6 +494,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	private void checkCollision(int dir){
 		
+		//boolean move = false;
+		
 		PlayerEntity player = level.getPlayer();
 		
 		if(!player.isFinished())
@@ -558,10 +562,11 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		
 		if(level.getItem(nCol, nRow) != GameValues.SOLID_ID && 
-				   level.getItem(nCol, nRow) != GameValues.BLANK_ID){	
+				   level.getItem(nCol, nRow) != GameValues.BLANK_ID &&
+				   level.getAtts(nCol, nRow) != GameValues.LOCK_ID){	
 				
+				//MOVE
 				player.move(dir);
-				
 				
 				if(id == GameValues.ONESTEP_ID || id == GameValues.BLANK_ID)
 					tiles++;
@@ -570,6 +575,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				
 				mGameScene.addItem(col, row, id);
 				level.setItem(col, row, id);
+				
+				
 				
 				//TELEPORT
 				if(level.getItem(nCol, nRow) == GameValues.TELEPORT_ID)
@@ -580,30 +587,74 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 					telID = 1;
 				else
 					telID = 0;
-					
+	
 				Debug.d("TELEPORT: telCol: " + Integer.toString(level.getTeleport(telID)[0]) + " telRow: " + level.getTeleport(telID)[1]);
 				
 				player.teleport(level.getTeleport(telID)[0], level.getTeleport(telID)[1]);
 				}
 				
-				//END
-				if(level.getItem(nCol, nRow) == GameValues.END_ID && canExit){
-					onEnd();
+				
+				if(level.getAtts(nCol, nRow) == GameValues.KEY_ID){
+					
+					isKey = true;
+					
+					mGameScene.removeAttsItem(nCol, nRow);
+					level.setAtts(nCol, nRow, 0);
 				
 				}
 				
+				//END
+				if(level.getItem(nCol, nRow) == GameValues.END_ID && canExit){
+					onEnd();
+				}
 				
-				if(level.isStar(nCol, nRow)){
-				mGameScene.removeStar(level.getStarId(nCol, nRow));
+				
+				
+				
+				//STARS
+				if(level.getAtts(nCol, nRow) == GameValues.FLAME_ID){
+				level.setAtts(nCol, nRow, 0);
+				mGameScene.removeAttsItem(nCol, nRow);
 				starCounter++;
 				addStar();
 				if(starCounter >= 3){
 				canExit = true;
-				
 				level.setEndsActive(mGameScene, true);
 				}
+				
+				
 				}
 				}
+		
+		
+				if(level.getAtts(nCol, nRow) != 0){
+					
+					switch(level.getAtts(nCol, nRow)){
+
+					case GameValues.LOCK_ID:
+						if(isKey){
+						
+						mGameScene.removeAttsItem(nCol, nRow);
+						level.setAtts(nCol, nRow, 0);
+						
+						player.move(dir);	
+							
+						if(id == GameValues.ONESTEP_ID || id == GameValues.BLANK_ID)
+							tiles++;
+							
+						mCTiles.setText("TILES: " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
+							
+						mGameScene.addItem(col, row, id);
+						level.setItem(col, row, id);
+						
+						}
+						break;
+						
+					}
+					
+				}
+		
+				
 		
 			
 			}
@@ -690,6 +741,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		time = 0;
 		tiles = 0;
 		canExit = false;
+		isKey = false;
 		starCounter = 0;
 		mCTiles.setText("TILES: 0/" + Integer.toString(maxTiles));
 		for(int i = 0; i < 3; i++){
@@ -720,7 +772,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		canExit = false;
 		starCounter = 0;
-		
+		isKey = false;
 		for(int i = 0; i < 3; i++){
 			if(stars[i] != null){
 			stars[i].detachSelf();
