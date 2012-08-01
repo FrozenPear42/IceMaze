@@ -635,8 +635,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		float score;
 		score = ((float)tiles/(float)level.getTiles());
-		score *= (0.5f/(float)time);
-		score *= 84000;
+		score *= 128000;
+		score += (1.0f/(float)time) * 12000;
 		
 		Debug.i(Integer.toString(tiles));
 		Debug.i(Integer.toString(maxTiles));

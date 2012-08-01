@@ -299,6 +299,26 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		mScene.registerTouchArea(mBackButton);
 
 
+		mBackButton = new Sprite(-cameraWidth, cameraHeight - 72 , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
+			
+			@Override
+			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+				if(pSceneTouchEvent.isActionUp()){
+					
+					mCamera.setCenter(cameraInitX, cameraInitY);
+					
+					return true;
+				}
+			return false;
+			}
+			
+		};
+		
+		mScene.attachChild(mBackButton);
+		mScene.registerTouchArea(mBackButton);
+
+		
+		
 		mScene.attachChild(new Sprite(-cameraWidth, 0, mTextures.get(GameValues.CREDITS_ID), getVertexBufferObjectManager()));
 		Text credits = new Text(-cameraWidth + 20, cameraHeight/2-32, this.mSFont, getString(R.string.creditstext), getVertexBufferObjectManager());
 		credits.setTextOptions(new TextOptions(HorizontalAlign.LEFT));
@@ -354,8 +374,32 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  	
 	  	back.setVisible(false);
 	  	
+	  	
+	  	
 	  	mHud.attachChild(levelpack);
 	  	mHud.attachChild(new Sprite(0, 0, mTextures.get(GameValues.LEVELSELECT_ID), getVertexBufferObjectManager()));
+	  	
+		mBackButton = new Sprite(0, cameraHeight - 72 , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
+			
+			@Override
+			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+				if(pSceneTouchEvent.isActionUp()){
+					mCamera.setCenter(cameraInitX, cameraInitY);
+					mHud.setVisible(false);
+					levelpackId = 1;
+					next.setVisible(true);
+					back.setVisible(false);
+					levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
+					return true;
+				}
+			return false;
+			}
+			
+		};
+		
+		mHud.attachChild(mBackButton);
+		mHud.registerTouchArea(mBackButton);
+	  	
 	  	
 	  	mHud.setVisible(false);
 	  	mCamera.setHUD(mHud);
