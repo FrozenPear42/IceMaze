@@ -4,6 +4,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.bugfullabs.icemaze.GameValues;
+
 
 /**
  * 
@@ -59,8 +61,12 @@ public class LevelHandler extends DefaultHandler{
 			if(in_rowtag == true)
 			{
 			
-			level.addItem(Integer.parseInt(atts.getValue("column")), current_row, Integer.parseInt(atts.getValue("id")));
 				
+			level.addItem(Integer.parseInt(atts.getValue("column")), current_row, Integer.parseInt(atts.getValue("id")));
+			
+			if(Integer.parseInt(atts.getValue("id")) == GameValues.TELEPORT_ID)
+				level.setTeleport(Integer.parseInt(atts.getValue("column")), current_row);
+			
 			}
 				
 			}else if(localName.equals("players")){

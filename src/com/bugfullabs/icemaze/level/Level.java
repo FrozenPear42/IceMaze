@@ -35,11 +35,14 @@ public class Level{
 	
 	private int stars[][];
 	private ArrayList<EndEntity> mEnds;
+	private int teleports[][];
+
 	
 	public int tiles;
 	
 public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
+		teleports = new int[2][2];
 		stars = new int[3][3];
 		mEnds = new ArrayList<EndEntity>();
 		
@@ -55,6 +58,10 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 				level_pattern[i][j] = GameValues.BLANK_ID;
 			}	
 		
+		}
+		
+		for(int i = 0; i < 2; i++){
+			teleports[i][0] = -1;
 		}
 		
 		this.id = id;
@@ -216,6 +223,36 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 	}
 	
+	
+public int getTeleportId(int nCol, int nRow) {
+	
+	if(teleports[0][0] == nCol && teleports[0][1] == nRow)
+		return 0;
+	
+	return 1;				
+	}
+	
+	
+	public void setTeleport(int c, int r){
+		if(teleports[0][0] == -1){
+			teleports[0][0] = c;
+			teleports[0][1] = r;
+		}else{
+			teleports[1][0] = c;
+			teleports[1][1] = r;		
+		}
+	
+	}
+	
+	public int[] getTeleport(int id){
+		int[] r = new int[2];
+		r[0] = teleports[id][0];
+		r[1] = teleports[id][1];
+		return r;
+	}
+	
+	
+	
 	public void setStarCollected(int id, boolean col){
 		if(col)
 			stars[id][2] = 1;
@@ -237,6 +274,7 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		return false;
 	}
+
 	
 	
 	

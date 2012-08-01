@@ -6,6 +6,7 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.debug.Debug;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.IModifier.IModifierListener;
 
@@ -156,5 +157,23 @@ public class PlayerEntity extends Sprite{
 		this.detachSelf();
 		this.attachToScene(mScene);
 		this.moveToInitPosition();
+	}
+
+
+
+
+	public void teleport(final int c, final int r) {
+		
+		Debug.d("TELEPORT: c: " + Integer.toString(c) + " r: " + Integer.toString(r));
+		
+		this.unregisterEntityModifier(mM);
+		
+		moveTo(c*32, r*32);
+		
+		mColumn = (int) (getX()/32);
+		mRow = (int) (getY()/32);
+
+
+		
 	}
 }

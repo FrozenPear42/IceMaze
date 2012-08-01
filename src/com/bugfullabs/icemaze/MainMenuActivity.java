@@ -138,7 +138,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
         
         this.mSFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
-        mSFont = new StrokeFont(this.getFontManager(), mSFontTexture, typeface, 40, true, Color.WHITE, 2, Color.BLACK);
+        mSFont = new StrokeFont(this.getFontManager(), mSFontTexture, typeface, 36, true, Color.WHITE, 2, Color.BLACK);
         
         mSFontTexture.load();
         mSFont.load();
@@ -190,7 +190,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		mScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.TITLE_ID), getVertexBufferObjectManager()));
 		mScene.attachChild(new Sprite(0, cameraHeight, mTextures.get(GameValues.SETTINGS_ID), getVertexBufferObjectManager()));
 		
-		
+		mScene.attachChild(new Text(540, 420, mSFont, getString(R.string.version), 12, getVertexBufferObjectManager()));
 		
 		/* PLAY */
 		new Button(this, mScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f, 250, 75, getString(R.string.newgame), mButtonLongRegion, mFont){

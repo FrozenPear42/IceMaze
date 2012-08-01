@@ -18,6 +18,7 @@ public interface GameValues{
 	public static final int PAUSE_ID = 3;
 	public static final int RESTART_ID = 4;
 	public static final int SCOREBG_ID = 5;
+	
 	/* GAME */
 	public static final int PLAYER_ID = 0;
 	public static final int SOLID_ID = 1;
@@ -27,6 +28,9 @@ public interface GameValues{
 	public static final int FLAME_ID = 5;
 	public static final int ONESTEP_ID = 6;
 	public static final int TWOSTEP_ID = 7;
+	public static final int LOCK_ID = 8;
+	public static final int KEY_ID = 9;
+	public static final int TELEPORT_ID = 10;
 	
 	/* MAIN MENU */
 

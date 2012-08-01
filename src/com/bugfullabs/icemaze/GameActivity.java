@@ -526,6 +526,10 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		case GameValues.END_ID:
 			id = GameValues.END_ID;
 			break;
+			
+		case GameValues.TELEPORT_ID:
+			id = GameValues.TELEPORT_ID;
+			break;
 				
 		}
 		
@@ -558,19 +562,37 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				
 				player.move(dir);
 				
+				
 				if(id == GameValues.ONESTEP_ID || id == GameValues.BLANK_ID)
 					tiles++;
 				
 				mCTiles.setText("TILES: " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
 				
 				mGameScene.addItem(col, row, id);
-				
 				level.setItem(col, row, id);
 				
+				//TELEPORT
+				if(level.getItem(nCol, nRow) == GameValues.TELEPORT_ID)
+				{	
+				Debug.d("TELEPORT: nCol: " + Integer.toString(nCol) + " nRow: " + Integer.toString(nRow));
+				int telID = level.getTeleportId(nCol, nRow);
+				if(telID == 0)
+					telID = 1;
+				else
+					telID = 0;
+					
+				Debug.d("TELEPORT: telCol: " + Integer.toString(level.getTeleport(telID)[0]) + " telRow: " + level.getTeleport(telID)[1]);
+				
+				player.teleport(level.getTeleport(telID)[0], level.getTeleport(telID)[1]);
+				}
+				
+				//END
 				if(level.getItem(nCol, nRow) == GameValues.END_ID && canExit){
 					onEnd();
 				
 				}
+				
+				
 				if(level.isStar(nCol, nRow)){
 				mGameScene.removeStar(level.getStarId(nCol, nRow));
 				starCounter++;
@@ -582,8 +604,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				}
 				}
 				}
-	
-	}
+		
+			
+			}
 		
 	
 	private void addStar(){
