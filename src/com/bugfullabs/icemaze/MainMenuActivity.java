@@ -18,6 +18,7 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.VerticalAlign;
+import org.andengine.util.debug.Debug;
 import org.andengine.util.texturepack.TexturePack;
 import org.andengine.util.texturepack.TexturePackLoader;
 import org.andengine.util.texturepack.TexturePackTextureRegion;
@@ -497,7 +498,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			  	GameActivity.setLevel(level);
 			  	
 			  	this.startActivity(new Intent(this, GameActivity.class));
-			  	this.finish();
+			  	//this.finish();
 			  	overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			  	
 			} catch (Exception e) {
@@ -524,12 +525,32 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 				}
 				
 				
+				
 				return true;
 			}
 			return super.onKeyDown(pKeyCode, pEvent); 
 		}
 
-	
+	    
+	    @Override
+	    public void onResumeGame(){
+	    	
+	    	super.onResumeGame();
+	    	
+			for(int i = 0; i < GameValues.LEVELPACKS; i++){
+				for(int j = 0; j < 15; j++){
+				
+				mGrid[i][j].detachSelf();	
+				mGrid[i][j] = null;
+				}
+			}
+			
+			drawGrid();
 
+	    	Debug.i("MainMEnuActivity", "onResumeGame()");
+	    	
+	    }
+	    
+	 
 	
 }

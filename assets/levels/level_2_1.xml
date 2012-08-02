@@ -194,7 +194,7 @@
 <item column="1" id="1" attribute="0"></item>
 <item column="2" id="1" attribute="0"></item>
 <item column="3" id="1" attribute="0"></item>
-<item column="4" id="1" attribute="0"></item>
+<item column="4" id="6" attribute="0"></item>
 <item column="5" id="6" attribute="0"></item>
 <item column="6" id="6" attribute="0"></item>
 <item column="7" id="6" attribute="5"></item>
@@ -204,11 +204,11 @@
 <item column="11" id="1" attribute="0"></item>
 <item column="12" id="1" attribute="0"></item>
 <item column="13" id="1" attribute="0"></item>
-<item column="14" id="10" attribute="0"></item>
+<item column="14" id="11" attribute="0"></item>
 <item column="15" id="6" attribute="0"></item>
-<item column="16" id="6" attribute="5"></item>
-<item column="17" id="6" attribute="0"></item>
-<item column="18" id="6" attribute="5"></item>
+<item column="16" id="6" attribute="0"></item>
+<item column="17" id="6" attribute="5"></item>
+<item column="18" id="6" attribute="0"></item>
 <item column="19" id="6" attribute="0"></item>
 <item column="20" id="3" attribute="0"></item>
 <item column="21" id="1" attribute="0"></item>
@@ -281,11 +281,11 @@
 <item column="7" id="1" attribute="0"></item>
 <item column="8" id="1" attribute="0"></item>
 <item column="9" id="1" attribute="0"></item>
-<item column="10" id="1" attribute="0"></item>
-<item column="11" id="1" attribute="0"></item>
-<item column="12" id="1" attribute="0"></item>
-<item column="13" id="1" attribute="0"></item>
-<item column="14" id="1" attribute="0"></item>
+<item column="10" id="11" attribute="0"></item>
+<item column="11" id="6" attribute="0"></item>
+<item column="12" id="6" attribute="5"></item>
+<item column="13" id="6" attribute="0"></item>
+<item column="14" id="10" attribute="0"></item>
 <item column="15" id="1" attribute="0"></item>
 <item column="16" id="1" attribute="0"></item>
 <item column="17" id="1" attribute="0"></item>
@@ -406,6 +406,6 @@
 <item column="24" id="1" attribute="0"></item>
 </row>
 <players number="1">
-<player color="0" column="5" row="7" id="0"></player>
+<player color="0" column="4" row="7" id="0"></player>
 </players>
 </level>

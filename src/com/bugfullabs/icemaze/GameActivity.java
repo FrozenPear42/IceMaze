@@ -167,7 +167,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	protected Scene onCreateScene() {
 		
 		if(level == null){
-			this.startActivity(new Intent(GameActivity.this, MainMenuActivity.class));
+			this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
 			this.finish();
 			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		}
@@ -285,7 +285,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				
 				if(pSceneTouchEvent.isActionUp()){
 				
-				GameActivity.this.startActivity(new Intent(GameActivity.this, MainMenuActivity.class));
+				GameActivity.this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
 				GameActivity.this.finish();
 				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 				
@@ -362,10 +362,32 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		final SpriteMenuItem resumeMenuItem = new SpriteMenuItem(MENU_RESUME,  mMenuTextures.get(GameValues.BACK_ID), getVertexBufferObjectManager());
 		resumeMenuItem.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		this.mPauseScene.addMenuItem(resumeMenuItem);
+		
 		this.mPauseScene.buildAnimations();
 		this.mPauseScene.setBackgroundEnabled(false);
 		this.mPauseScene.setOnMenuItemClickListener(this);
 
+		Sprite next = new Sprite(menuMenuItem.getX() + 128 + 1, menuMenuItem.getY(), mMenuTextures.get(GameValues.NEXT_ID), getVertexBufferObjectManager()){
+			
+			@Override
+	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+				
+				if(pSceneTouchEvent.isActionUp()){
+				nextLevel();	
+				doResume();	
+				}
+				return true;
+			}	
+			
+		};
+		
+
+		next.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		this.mPauseScene.attachChild(next);
+		this.mPauseScene.registerTouchArea(next);
+		this.mPauseScene.buildAnimations();
+		
+		
 	}
 	
 	@Override
@@ -373,7 +395,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		switch (pMenuItem.getID()){
 		
 		case MENU_MAIN:
-			this.startActivity(new Intent(this ,MainMenuActivity.class));
+			this.setIntent(new Intent(this, MainMenuActivity.class));
 			this.finish();
 			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			
@@ -802,7 +824,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			
 			}else{
 				
-				GameActivity.this.startActivity(new Intent(GameActivity.this, MainMenuActivity.class));
+				GameActivity.this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
 				GameActivity.this.finish();
 				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			}
