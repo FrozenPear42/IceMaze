@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">IceMaze</string>
+    <string name="app_name">Ice Maze</string>
     <string name="options">Options</string>
     <string name="credits">Credits</string>
     <string name="newgame">Play</string>
@@ -10,6 +10,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 	<string name="creditstext">© 2012 Wojciech Gruszka\nweb: http://bugfullabs.pl\ne-mail: wojciech@bugfullabs.pl</string>
-	<string name="version">0.2.1a Beta</string>
+	<string name="version">0.2.2b Beta</string>
     
 </resources>
