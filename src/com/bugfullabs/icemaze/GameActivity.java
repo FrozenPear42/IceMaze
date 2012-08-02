@@ -799,9 +799,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		Debug.i("Level ID: " + Integer.toString(levelID));
 		Debug.i("Level ID + 1: " + Integer.toString(levelID+1));
 		
+		timerStarted = false;
+		time = 0;
+		tiles = 0;
 		canExit = false;
-		starCounter = 0;
 		isKey = false;
+		starCounter = 0;
+
 		for(int i = 0; i < 3; i++){
 			if(stars[i] != null){
 			stars[i].detachSelf();
