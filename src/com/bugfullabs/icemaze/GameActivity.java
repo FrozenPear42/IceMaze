@@ -531,10 +531,14 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			id = GameValues.END_ID;
 			break;
 			
-		case GameValues.TELEPORT_ID:
-			id = GameValues.TELEPORT_ID;
+		case GameValues.TELEPORTGREEN_ID:
+			id = GameValues.TELEPORTGREEN_ID;
 			break;
-				
+			
+		case GameValues.TELEPORTRED_ID:
+			id = GameValues.TELEPORTRED_ID;
+			break;
+			
 		}
 		
 		
@@ -579,20 +583,23 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				
 				
 				//TELEPORT
-				if(level.getItem(nCol, nRow) == GameValues.TELEPORT_ID)
+				if(level.getItem(nCol, nRow) == GameValues.TELEPORTGREEN_ID)
 				{	
 				Debug.d("TELEPORT: nCol: " + Integer.toString(nCol) + " nRow: " + Integer.toString(nRow));
-				int telID = level.getTeleportId(nCol, nRow);
-				if(telID == 0)
-					telID = 1;
-				else
-					telID = 0;
-	
-				Debug.d("TELEPORT: telCol: " + Integer.toString(level.getTeleport(telID)[0]) + " telRow: " + level.getTeleport(telID)[1]);
 				
-				player.teleport(level.getTeleport(telID)[0], level.getTeleport(telID)[1]);
+				int telID = level.getTeleportID(GameValues.GREEN_TELEPORT, nCol, nRow);
+				
+				player.teleport(level.getLinikedTeleport(GameValues.GREEN_TELEPORT, telID)[0], level.getLinikedTeleport(GameValues.GREEN_TELEPORT, telID)[1]);
 				}
 				
+				if(level.getItem(nCol, nRow) == GameValues.TELEPORTRED_ID)
+				{	
+				Debug.d("TELEPORT: nCol: " + Integer.toString(nCol) + " nRow: " + Integer.toString(nRow));
+				
+				int telID = level.getTeleportID(GameValues.RED_TELEPORT, nCol, nRow);
+				
+				player.teleport(level.getLinikedTeleport(GameValues.RED_TELEPORT, telID)[0], level.getLinikedTeleport(GameValues.RED_TELEPORT, telID)[1]);
+				}
 				
 				if(level.getAtts(nCol, nRow) == GameValues.KEY_ID){
 					

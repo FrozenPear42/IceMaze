@@ -39,15 +39,14 @@ public class Level{
 	private int playerY;
 	
 	private ArrayList<EndEntity> mEnds;
-	private int teleports[][];
+	private int[][][] teleports;
 
-	
 	
 	public int tiles;
 	
 public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
-		teleports = new int[2][2];
+		teleports = new int[GameValues.TELEPORTS][2][2];
 		mEnds = new ArrayList<EndEntity>();
 		
 		width = columns;
@@ -65,8 +64,11 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 		
 		}
 		
-		for(int i = 0; i < 2; i++){
-			teleports[i][0] = -1;
+		for(int i = 0; i < GameValues.TELEPORTS; i++){
+			for(int j = 0; j < 2; j++){
+			teleports[i][j][0] = -1;
+			teleports[i][j][1] = -1;	
+			}
 		}
 		
 		this.id = id;
@@ -234,31 +236,41 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 	}
 	
 	
-public int getTeleportId(int nCol, int nRow) {
+	public void setTeleport(int id, int c, int r){
 	
-	if(teleports[0][0] == nCol && teleports[0][1] == nRow)
-		return 0;
-	
-	return 1;				
-	}
-	
-	
-	public void setTeleport(int c, int r){
-		if(teleports[0][0] == -1){
-			teleports[0][0] = c;
-			teleports[0][1] = r;
+		if(teleports[id][0][0] == -1){
+			teleports[id][0][0] = c;
+			teleports[id][0][1] = r;
 		}else{
-			teleports[1][0] = c;
-			teleports[1][1] = r;		
+			teleports[id][1][0] = c;
+			teleports[id][1][1] = r;	
 		}
-	
+		
+		
 	}
 	
-	public int[] getTeleport(int id){
-		int[] r = new int[2];
-		r[0] = teleports[id][0];
-		r[1] = teleports[id][1];
-		return r;
+	public int[] getLinikedTeleport(int idcolor, int id){
+		int[] ret = new int[2];
+		
+		if(id == 0){
+			ret[0] = teleports[idcolor][1][0];
+			ret[1] = teleports[idcolor][1][1];
+		}else{
+			ret[0] = teleports[idcolor][0][0];
+			ret[1] = teleports[idcolor][0][1];
+		}
+		
+		return ret;
+	}
+	
+	public int getTeleportID(int color, int c, int r){
+		
+		if(teleports[color][0][0] == c && teleports[color][0][1] == r)
+			return 0;
+		else if(teleports[color][1][0] == c && teleports[color][1][1] == r)
+			return 1;
+		
+		return -1;
 	}
 	
 	

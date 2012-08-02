@@ -64,11 +64,16 @@ public class LevelHandler extends DefaultHandler{
 				
 			level.addItem(Integer.parseInt(atts.getValue("column")), current_row, Integer.parseInt(atts.getValue("id")), Integer.parseInt(atts.getValue("attribute")));
 			
-			if(Integer.parseInt(atts.getValue("id")) == GameValues.TELEPORT_ID)
-				level.setTeleport(Integer.parseInt(atts.getValue("column")), current_row);
+			if(Integer.parseInt(atts.getValue("id")) == GameValues.TELEPORTGREEN_ID){
+				level.setTeleport(GameValues.GREEN_TELEPORT, Integer.parseInt(atts.getValue("column")), current_row);
+			}
 			
+			if(Integer.parseInt(atts.getValue("id")) == GameValues.TELEPORTRED_ID){
+				level.setTeleport(GameValues.RED_TELEPORT, Integer.parseInt(atts.getValue("column")), current_row);
 			}
 				
+			}
+			
 			}else if(localName.equals("players")){
 				
 			}else if(localName.equals("player")){

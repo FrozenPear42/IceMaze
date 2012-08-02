@@ -30,7 +30,8 @@ public interface GameValues{
 	public static final int TWOSTEP_ID = 7;
 	public static final int LOCK_ID = 8;
 	public static final int KEY_ID = 9;
-	public static final int TELEPORT_ID = 10;
+	public static final int TELEPORTGREEN_ID = 10;
+	public static final int TELEPORTRED_ID = 11;
 	
 	/* MAIN MENU */
 
@@ -56,7 +57,10 @@ public interface GameValues{
 	/* GAME VALUES */
 	
 	public static final int LEVELPACKS = 2;
-
+	public static final int TELEPORTS = 2;
 	
+	public static final int GREEN_TELEPORT = 0;
+	public static final int RED_TELEPORT = 1;
+
 	
 }

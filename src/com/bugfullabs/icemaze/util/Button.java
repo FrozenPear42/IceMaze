@@ -1,5 +1,6 @@
 package com.bugfullabs.icemaze.util;
 
+import org.andengine.entity.Entity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.TiledSprite;
 import org.andengine.input.touch.TouchEvent;
@@ -77,6 +78,52 @@ public class Button{
 	
 	
 	
+	public Button(final BaseGameActivity a, final Entity e, final Scene scene, final float x, final float y, final float width, final float height, final String text, final TiledTextureRegion tx, final Font font){	
+		
+		mX = x;
+		mY = y;
+	
+		txRegion = tx.deepCopy();
+		
+		textButton = new AlignedText(x, y, font, text, HorizontalAlign.CENTER, VerticalAlign.CENTER, width, height, a);	
+		
+		bgButton = new	TiledSprite(x, y, txRegion, a.getVertexBufferObjectManager()){
+		@Override
+        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+
+
+		switch(pSceneTouchEvent.getAction()){
+		
+		case TouchEvent.ACTION_UP:
+			this.setCurrentTileIndex(0);
+			return onButtonPressed();
+		
+		case TouchEvent.ACTION_DOWN:
+			this.setCurrentTileIndex(1);
+			Debug.i("DOWN");
+			break;
+		
+		default:
+			this.setCurrentTileIndex(0);
+			break;
+
+		}
+       	        
+	return true;
+    }
+	};
+	bgButton.setWidth(width);
+	bgButton.setHeight(height);
+	
+	bgButton.setZIndex(9);
+	textButton.setZIndex(9);
+	scene.registerTouchArea(bgButton);
+	e.attachChild(bgButton);
+	e.attachChild(textButton);
+	e.sortChildren();
+	}
+
+	
 	
 	
 	public void setText(String text){
@@ -125,7 +172,7 @@ public class Button{
 	
 	
 	
-	void detachSelf(){
+	public void detachSelf(){
 		this.bgButton.detachSelf();
 		this.textButton.detachSelf();
 	}

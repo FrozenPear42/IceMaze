@@ -35,6 +35,7 @@ import com.bugfullabs.icemaze.util.AlignedText;
 import com.bugfullabs.icemaze.util.Button;
 
 
+
 /**
  * 
  * @author Bugful Labs
@@ -43,7 +44,6 @@ import com.bugfullabs.icemaze.util.Button;
  *
  */
 
-//TODO: REDRAW GRID AFTER RESET
 
 public class MainMenuActivity extends SimpleBaseGameActivity{
 
@@ -60,9 +60,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	private BitmapTextureAtlas mSFontTexture;
 	private StrokeFont mSFont;
 	
-
 	private TexturePackTextureRegionLibrary mTextures;
-	
+
 	
 	SharedPreferences mSettings;
 	SharedPreferences.Editor mEditor;
@@ -88,6 +87,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	
 	public static float marginX;
 	public static float marginY;
+	
+	private Button mGrid[][];
 	
 
 	private int levelpackId = 1;
@@ -176,6 +177,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	@Override
 	protected Scene onCreateScene() {
 		
+		mGrid = new Button[GameValues.LEVELPACKS][15];
+		
 		mScore = getSharedPreferences(GameValues.SCORE_FILE, 0);
 		mScoreEditor = mScore.edit();
 		
@@ -226,7 +229,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		
 		
 		
-		//FIXME:
+
 		
 		mMusicButton = new Button(this, mScene, 110, cameraHeight + 180, 250, 75, getString(R.string.music) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
 			@Override
@@ -264,21 +267,41 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		new Button(this, mScene, 440, cameraHeight+180, 250, 75, getString(R.string.reset), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
-				mScoreEditor.clear();
-				mScoreEditor.commit();
+
+
 				
+			        	   mScoreEditor.clear();
+							
+			        	   mScoreEditor.commit();
+							
+							/* REDRAW GRID */
+							
+							for(int i = 0; i < GameValues.LEVELPACKS; i++){
+								for(int j = 0; j < 15; j++){
+								
+								mGrid[i][j].detachSelf();	
+								mGrid[i][j] = null;
+								}
+							}
+							
+							drawGrid();
+			           			     
 				return true;
 			}
 		};
 		
-		
+			
+	/*	
 		new Button(this, mScene, 440, cameraHeight+275, 250, 75, "Steering", mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 
 				return true;
 			}
+			
 		};
+		*/
+
 		
 		Sprite mBackButton = new Sprite(0, cameraHeight *2 - 72 , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
 			
@@ -407,46 +430,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  	
 	  	
 	  	/* CREATE GRID */
-	  	
-	  	  int i = 0;
-	  	  
-	  	  for(int z = 0; z < GameValues.LEVELPACKS; z++){
-	  	  i = 0;
-	  	  for(int j = 0; j < (NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW); j++){
-				for(int k = 0; k < NUMBER_OF_ITEMS_IN_ROW; k++){
-				final int id = i + 1;
-				//TODO: DONE LEVELS
-				
-				TiledTextureRegion buttonRegion;
-				
-				if(mScore.getInt("score" + Integer.toString(z+1) + "_" + Integer.toString(id), 0) > 0){
-				if(mScore.getBoolean("full" + Integer.toString(z+1) + "_" + Integer.toString(id), false)){
-				buttonRegion = mButtonFullRegion;
-				}else{
-				buttonRegion = mButtonDoneRegion;
-				}
-				}else{
-				buttonRegion = mButtonShortRegion;
-				}
-				
-					
-				new Button(this, mScene, (z+1)*cameraWidth + marginX + (k * offsetX) - 36, marginY + (j * offsetY)- 36, 72, 72, Integer.toString(id),buttonRegion , mFont){
-	    			  @Override
-	    			  public boolean onButtonPressed(){
-	    				MainMenuActivity.this.onLevelSelected(id, levelpackId);
-	    				return true;
-	    			  }
-	    		  };
- 
-	    		  i++;
-				}
-			}
-	  	  
-	  	  
-	  	  }
-		
-		
-		
+
+		drawGrid();
 		
 		
 		if(mToogleMusic != true)
@@ -462,6 +447,44 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	
 
 
+		private void drawGrid(){
+		  	  int i = 0;
+		  	  
+		  	  for(int z = 0; z < GameValues.LEVELPACKS; z++){
+		  	  i = 0;
+		  	  for(int j = 0; j < (NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW); j++){
+					for(int k = 0; k < NUMBER_OF_ITEMS_IN_ROW; k++){
+					final int id = i + 1;
+
+					TiledTextureRegion buttonRegion;
+					
+					if(mScore.getInt("score" + Integer.toString(z+1) + "_" + Integer.toString(id), 0) > 0){
+					if(mScore.getBoolean("full" + Integer.toString(z+1) + "_" + Integer.toString(id), false)){
+					buttonRegion = mButtonFullRegion;
+					}else{
+					buttonRegion = mButtonDoneRegion;
+					}
+					}else{
+					buttonRegion = mButtonShortRegion;
+					}
+					
+						
+					mGrid[z][i] = new Button(this, mScene, (z+1)*cameraWidth + marginX + (k * offsetX) - 36, marginY + (j * offsetY)- 36, 72, 72, Integer.toString(id),buttonRegion , mFont){
+		    			  @Override
+		    			  public boolean onButtonPressed(){
+		    				MainMenuActivity.this.onLevelSelected(id, levelpackId);
+		    				return true;
+		    			  }
+		    		  };
+	 
+		    		  i++;
+					}
+				}
+		  	  
+		  	  
+		  	  }
+		}
+	
 
 
 	    private void onLevelSelected(int id, int level_pack)
