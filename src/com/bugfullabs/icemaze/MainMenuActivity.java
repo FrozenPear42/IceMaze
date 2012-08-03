@@ -5,7 +5,6 @@ import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
-import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -110,6 +109,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	private SharedPreferences.Editor mScoreEditor;
 
 	private AlignedText levelpack;
+	
+	private boolean isDrawingGrid = false;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -502,7 +503,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			  	GameActivity.setLevel(level);
 			  	
 			  	this.startActivity(new Intent(this, GameActivity.class));
-			  	//this.finish();
+			  	this.finish();
 			  	overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			  	
 			} catch (Exception e) {
@@ -536,14 +537,18 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		}
 
 	    
+/*
 	    @Override
 	    public void onResumeGame(){
 	    	
 	    	super.onResumeGame();
 	    	
-	    	if(mGrid[0][0] != null)
+	    	if(mGrid[0][0] != null && !isDrawingGrid)
 	    	{
-			for(int i = 0; i < GameValues.LEVELPACKS; i++){
+			
+	    	isDrawingGrid = true;
+	    		
+	    	for(int i = 0; i < GameValues.LEVELPACKS; i++){
 				for(int j = 0; j < 15; j++){
 				
 				mGrid[i][j].detachSelf();	
@@ -554,12 +559,13 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			}
 			
 			drawGrid();
+	    	isDrawingGrid = false;
 	    	}
+	    	
+	    	
 	    	
 	    	Debug.i("MainMEnuActivity", "onResumeGame()");
 	    	
-	    }
-	    
-	 
-	
+	    */
+	    	
 }

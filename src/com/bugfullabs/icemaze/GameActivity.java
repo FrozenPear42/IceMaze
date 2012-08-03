@@ -167,7 +167,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	protected Scene onCreateScene() {
 		
 		if(level == null){
-			this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
+			this.startActivity(new Intent(GameActivity.this, MainMenuActivity.class));
 			this.finish();
 			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		}
@@ -285,7 +285,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				
 				if(pSceneTouchEvent.isActionUp()){
 				
-				GameActivity.this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
+				GameActivity.this.startActivity(new Intent(GameActivity.this, MainMenuActivity.class));
 				GameActivity.this.finish();
 				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 				
@@ -395,7 +395,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		switch (pMenuItem.getID()){
 		
 		case MENU_MAIN:
-			this.setIntent(new Intent(this, MainMenuActivity.class));
+			this.startActivity(new Intent(this, MainMenuActivity.class));
 			this.finish();
 			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			
@@ -828,7 +828,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			
 			}else{
 				
-				GameActivity.this.setIntent(new Intent(GameActivity.this, MainMenuActivity.class));
+				GameActivity.this.startActivity(new Intent(GameActivity.this, MainMenuActivity.class));
 				GameActivity.this.finish();
 				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			}
