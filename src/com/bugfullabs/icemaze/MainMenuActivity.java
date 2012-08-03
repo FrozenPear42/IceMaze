@@ -4,12 +4,14 @@ import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
+import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
+import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.StrokeFont;
 import org.andengine.opengl.texture.TextureOptions;
@@ -127,7 +129,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		this.mCamera = new SmoothCamera(0, 0, MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight, 800, 800, 1.0f);
 
 		
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight), this.mCamera);
+		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), this.mCamera);
 	}
 
 	@Override
@@ -177,6 +179,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 
 	@Override
 	protected Scene onCreateScene() {
+		
+		mEngine.registerUpdateHandler(new FPSLogger());
 		
 		mGrid = new Button[GameValues.LEVELPACKS][15];
 		
@@ -537,16 +541,21 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	    	
 	    	super.onResumeGame();
 	    	
+	    	if(mGrid[0][0] != null)
+	    	{
 			for(int i = 0; i < GameValues.LEVELPACKS; i++){
 				for(int j = 0; j < 15; j++){
 				
 				mGrid[i][j].detachSelf();	
 				mGrid[i][j] = null;
+				
+				
 				}
 			}
 			
 			drawGrid();
-
+	    	}
+	    	
 	    	Debug.i("MainMEnuActivity", "onResumeGame()");
 	    	
 	    }
