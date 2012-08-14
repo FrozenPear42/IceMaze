@@ -1,8 +1,13 @@
 package com.bugfullabs.icemaze.level;
 
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
+import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.texturepack.TexturePack;
 import org.andengine.util.texturepack.TexturePackTextureRegionLibrary;
+
+import android.content.SharedPreferences;
 
 import com.bugfullabs.icemaze.GameValues;
 import com.bugfullabs.icemaze.game.GameScene;
@@ -20,31 +25,67 @@ public class LevelSceneFactory{
 	
 	
 	
-	public static GameScene createScene(BaseGameActivity a, Level level, TexturePack txPack){	
+	public static GameScene createScene(final BaseGameActivity a, final Level level, TexturePack txPack){	
 		
-			GameScene levelScene = new GameScene(a, txPack, level);		
-			TexturePackTextureRegionLibrary txl = txPack.getTexturePackTextureRegionLibrary();
+			final GameScene levelScene = new GameScene(a, txPack, level);		
+			final TexturePackTextureRegionLibrary txl = txPack.getTexturePackTextureRegionLibrary();
 			
-
+			float interval = 0;
+			
+			SharedPreferences settings = a.getSharedPreferences(GameValues.SETTINGS_FILE, 0);
+			
+			boolean anim = settings.getBoolean("anim", false);
+			
+			
+			
+			
 			for(int i = 0; i < level.getWidth(); i++){
 		    	  for(int j = 0; j < level.getHeight(); j++){
 		    	  
-			  		  levelScene.addItem(i, j, level.getItem(i, j));
-			  		  
+		    		  
+		    		  interval = 0.15f + 0.005f * (i * level.getHeight() + j);
+	
+		    		  if(anim)
+		    			  levelScene.addItem(i, j, level.getItem(i, j), interval);
+		    			 else
+			  			  levelScene.addItem(i, j, level.getItem(i, j));
+			    		 	  
+		    		  
+		    		  
 			  		  if(level.getAtts(i, j) != 0){
+			  			  
+			  			  if(anim)
+			  			  levelScene.addAttsItem(i, j, level.getAtts(i, j), interval);
+			  			  else
 			  			  levelScene.addAttsItem(i, j, level.getAtts(i, j));
+			  			  
+			  			  
 			  		  }
+			  		  
+			  		  
 			  		  
 		    	}
 			 }	
 			
 
-  		  	level.createPlayer(a.getVertexBufferObjectManager(), txl.get(GameValues.PLAYER_ID));
-  		  	level.getPlayer().attachToScene(levelScene);
-			level.getPlayer().setZIndex(2);
-			level.setEndsActive(levelScene, false);
-			levelScene.sortChildren();
-			
+			a.getEngine().registerUpdateHandler(new TimerHandler(interval, false, new ITimerCallback() {
+				
+				@Override
+				public void onTimePassed(TimerHandler pTimerHandler) {
+					level.setEndsActive(levelScene, false);
+					
+					level.createPlayer(a.getVertexBufferObjectManager(), txl.get(GameValues.PLAYER_ID));
+		  		  	level.getPlayer().setAlpha(0.0f);
+		  		  	level.getPlayer().attachToScene(levelScene);
+					level.getPlayer().setZIndex(2);
+					levelScene.sortChildren();
+					
+					level.getPlayer().registerEntityModifier(new FadeInModifier(0.2f));
+					
+				}
+			}));
+
+  		  
 			return levelScene;
 	}
 	

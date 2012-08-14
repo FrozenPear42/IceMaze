@@ -86,7 +86,7 @@ public class PlayerEntity extends Sprite{
 	}
 	
 		
-	public void moveTo(float endX, float endY){
+	public void moveTo(float endX, float endY, final IOnFinishListener iOnFinishListener){
 	
 		modifierFinished = false;
 
@@ -104,7 +104,7 @@ public class PlayerEntity extends Sprite{
 				mColumn = (int) (getX()/32);
 				mRow = (int) (getY()/32);
 				modifierFinished = true;
-				
+				iOnFinishListener.onFinish();
 			}
 		});
 		mM.setAutoUnregisterWhenFinished(true);
@@ -112,36 +112,62 @@ public class PlayerEntity extends Sprite{
 
 	}
 	
+	public void moveTo(float endX, float endY){
+		
+		modifierFinished = false;
+
+		mM = new MoveModifier(0.2f, this.getX(), endX, this.getY(), endY);
+		mM.addModifierListener(new IModifierListener<IEntity>(){
+
+			@Override
+			public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
+				mColumn = (int) (getX()/32);
+				mRow = (int) (getY()/32);
+				modifierFinished = true;
+			}
+		});
+		mM.setAutoUnregisterWhenFinished(true);
+		this.registerEntityModifier(mM);
+
+	}
+	
+	
 	public boolean isFinished(){
 		return modifierFinished;
 	}
 	
-	public void move(int dir){
+	public void move(int dir, IOnFinishListener iOnFinishListener){
 		
 		switch(dir){
 		
 		case DIRECTION_DOWN:
 			
-			moveTo(getX(), getY()-32);
+			moveTo(getX(), getY()-32, iOnFinishListener);
 			
 			break;
 		
 		case DIRECTION_UP:
 			
-			moveTo(getX(), getY()+32);
+			moveTo(getX(), getY()+32, iOnFinishListener);
 			
 			
 			break;
 			
 		case DIRECTION_LEFT:
 				
-			moveTo(getX()-32, getY());			
+			moveTo(getX()-32, getY(), iOnFinishListener);			
 			
 			break;
 			
 		case DIRECTION_RIGHT:
 			
-			moveTo(getX()+32, getY());
+			moveTo(getX()+32, getY(), iOnFinishListener);
 			
 			
 			break;
@@ -166,8 +192,7 @@ public class PlayerEntity extends Sprite{
 		
 		Debug.d("TELEPORT: c: " + Integer.toString(c) + " r: " + Integer.toString(r));
 		
-		this.unregisterEntityModifier(mM);
-		
+
 		moveTo(c*32, r*32);
 		
 		mColumn = (int) (getX()/32);

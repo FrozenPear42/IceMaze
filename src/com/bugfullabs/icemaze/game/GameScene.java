@@ -1,17 +1,22 @@
 package com.bugfullabs.icemaze.game;
 
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
+import org.andengine.entity.modifier.FadeOutModifier;
+import org.andengine.entity.modifier.MoveXModifier;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.ui.activity.BaseGameActivity;
+import org.andengine.util.debug.Debug;
+import org.andengine.util.modifier.ease.EaseStrongIn;
+import org.andengine.util.modifier.ease.EaseStrongOut;
 import org.andengine.util.texturepack.TexturePack;
 
-import com.bugfullabs.icemaze.GameValues;
 import com.bugfullabs.icemaze.level.Level;
 
 public class GameScene extends Scene{
 
 	private Sprite[][][] mSprites;
-	private Sprite[]   mStars;
 
 	@SuppressWarnings("unused")
 	private Level level;
@@ -36,7 +41,7 @@ public class GameScene extends Scene{
 	level = l;
 	
 	mSprites = new Sprite[width][height][2];
-	mStars = new Sprite[3];
+
 	
 	}
 	
@@ -51,14 +56,21 @@ public class GameScene extends Scene{
 		 this.sortChildren();
 	
 	}
+
 	
-	public void addStar(int id, int column, int row){
+	public void addItem(int column, int row, int item, float interval){
 		
-		mStars[id] = new Sprite(column*32, row*32, mTexturePack.getTexturePackTextureRegionLibrary().get(GameValues.FLAME_ID), mActivity.getVertexBufferObjectManager());
-		this.attachChild(mStars[id]);
-		mStars[id].setZIndex(1);
-		this.sortChildren();
+		if(mSprites[column][row] != null)
+			this.detachChild(mSprites[column][row][0]);
+		
+		 mSprites[column][row][0] = new Sprite(0, row*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
+		 this.attachChild(mSprites[column][row][0]);
+		 this.sortChildren();
+		 mSprites[column][row][0].registerEntityModifier(new MoveXModifier(interval, 800 + column*32, column*32, EaseStrongIn.getInstance()));
+		 
+		 
 	}
+
 	
 	public void addAttsItem(int c, int r, int item){
 		
@@ -68,25 +80,31 @@ public class GameScene extends Scene{
 		 this.sortChildren();
 		
 	}
+
+	public void addAttsItem(int c, int r, int item, float interval){
+		
+		 mSprites[c][r][1] = new Sprite(0, r*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
+		 mSprites[c][r][1].setZIndex(1);
+		 this.attachChild(mSprites[c][r][1]);
+		 this.sortChildren();
+		 mSprites[c][r][1].registerEntityModifier(new MoveXModifier(interval, 800+c*32, c*32, EaseStrongIn.getInstance()));
+		 
+		 
+	}
 	
 	public void removeAttsItem(int c, int r){
 		this.detachChild(mSprites[c][r][1]);
 		mSprites[c][r][1] = null;
 		}
 	
-	public void removeStar(int id){
-		this.detachChild(mStars[id]);
+	
+	
+	public Sprite getItem(int c, int r, int l){
+		return mSprites[c][r][l];
 	}
 	
 	public void removeAllItems(){
-		
-		//level.getPlayer().detachSelf();
-		
-		for(int i = 0; i < 3; i++){
-			this.detachChild(mStars[i]);
-			mStars[i] = null;
-		}
-		
+
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
 				for(int k = 0; k < 2; k ++){
@@ -98,6 +116,46 @@ public class GameScene extends Scene{
 			}
 		}
 	}
+
+
+	public void moveItems(final IOnFinishListener iOnFinishListener) {
+		
+		float interval = 0;
+		
+		Debug.i("MOVE");
+		
+		for(int i = width-1; i >= 0; i--){
+			for(int j = height-1; j >= 0; j--){
+				
+				interval = 0.15f ;//+ 0.005f * (i*height + j);
+
+				Debug.i("MOVEITEMS");
+				Debug.i(Float.toString(interval));
+				if(mSprites[i][j][0] != null){
+					//mSprites[i][j][0].registerEntityModifier(new MoveXModifier(interval, i*32, 800+i*32, EaseStrongOut.getInstance()));
+					mSprites[i][j][0].registerEntityModifier(new FadeOutModifier(2f));
+					Debug.i("MOVED ITEM");
+				}
+				if(mSprites[i][j][1] != null){
+					//mSprites[i][j][1].registerEntityModifier(new MoveXModifier(interval, i*32, 800+i*32, EaseStrongOut.getInstance()));
+					Debug.i("MOVED ATT");
+				}
+				
+			}
+		}
+		
+		mActivity.getEngine().registerUpdateHandler(new TimerHandler(interval, false, new ITimerCallback() {
+			
+			@Override
+			public void onTimePassed(TimerHandler pTimerHandler) {
+				System.gc();
+				iOnFinishListener.onFinish();
+			}
+		}));
+
+	}
+	
+	
 	
 	
 }

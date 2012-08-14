@@ -134,6 +134,7 @@ public class Splash extends SimpleBaseGameActivity{
 				case 6:
 					Intent intent = new Intent(Splash.this, MainMenuActivity.class);
 					Splash.this.startActivity(intent);
+					System.gc();
 					Splash.this.finish();
 					break;
 				}

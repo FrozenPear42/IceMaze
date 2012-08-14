@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">IceMaze</string>
-    <string name="options">Settings</string>
-    <string name="credits">Credits</string>
-    <string name="newgame">Play!</string>
-    <string name="music">Music</string>
+    <string name="options">Ustawienia</string>
+    <string name="credits">Autorzy</string>
+    <string name="newgame">Graj!</string>
+    <string name="music">Muzyka</string>
     <string name="sound">SFX</string>
     <string name="reset">Reset</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
 	<string name="creditstext">© 2012 Wojciech Gruszka\nweb: http://bugfullabs.pl\ne-mail: wojciech@bugfullabs.pl</string>
 	<string name="version">0.3.1a Beta</string>
-	<string name="Anim">Animations</string>
+	<string name="anim">Animacje</string>
     
 </resources>

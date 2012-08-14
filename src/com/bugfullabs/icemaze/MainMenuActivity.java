@@ -1,5 +1,7 @@
 package com.bugfullabs.icemaze;
 
+import java.util.Locale;
+
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.options.EngineOptions;
@@ -45,7 +47,7 @@ import com.bugfullabs.icemaze.util.Button;
  * @email  wojciech@bugfullabs.pl
  *
  */
-
+         
 
 public class MainMenuActivity extends SimpleBaseGameActivity{
 
@@ -70,7 +72,9 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	
 	private boolean mToogleSound = false;
 	private boolean mToogleMusic = false;
+	private boolean mToogleAnim = false;
 	
+	private Button mAnimButton;
 	private Button mMusicButton;
 	private Button mSoundButton;
 	
@@ -109,8 +113,9 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	private SharedPreferences.Editor mScoreEditor;
 
 	private AlignedText levelpack;
+
 	
-	private boolean isDrawingGrid = false;
+	//private boolean isDrawingGrid = false;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -123,7 +128,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		
 		mSettings = getSharedPreferences(GameValues.SETTINGS_FILE, 0);
 		mEditor = mSettings.edit();
-		
+
+		mToogleAnim = mSettings.getBoolean("anim", false);
 		mToogleSound = mSettings.getBoolean("sound", false);
 		mToogleMusic = mSettings.getBoolean("music", false);		
 
@@ -151,7 +157,13 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
         TexturePackLoader tpl = new TexturePackLoader(getAssets(), getTextureManager());
         try {
 		
+        	Debug.w(this.getResources().getConfiguration().locale.getCountry());
+        if(this.getResources().getConfiguration().locale.getCountry().equalsIgnoreCase("pl"))
+        mTexturePack = tpl.loadFromAsset("gfx/menu/menu_pl.xml", "gfx/menu/"); 
+        else
         mTexturePack = tpl.loadFromAsset("gfx/menu/menu.xml", "gfx/menu/");
+        	
+        
         mTexturePack.loadTexture();
         mTextures = mTexturePack.getTexturePackTextureRegionLibrary();
         } catch (Exception e) {
@@ -269,8 +281,26 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 				return true;
 			}
 		};
+
 		
-		new Button(this, mScene, 440, cameraHeight+180, 250, 75, getString(R.string.reset), mButtonLongRegion, mFont){
+		mAnimButton = new Button(this, mScene, 440, cameraHeight+180, 250, 75, getString(R.string.anim) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
+			@Override
+			public boolean onButtonPressed(){	
+				mToogleAnim = !mToogleAnim;
+				
+				mEditor.putBoolean("anim", mToogleAnim);
+				mEditor.commit();
+				if(mToogleAnim == true){
+				this.setText(getString(R.string.anim) + ": " + getString(R.string.yes));
+				}else{
+				this.setText(getString(R.string.anim) + ": " + getString(R.string.no));
+				}
+				return true;
+			}
+		};
+		
+		
+		new Button(this, mScene, 440, cameraHeight+275, 250, 75, getString(R.string.reset), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 
@@ -446,6 +476,9 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		if(mToogleSound != true)
 			this.mSoundButton.setText(getString(R.string.sound) + ": " + getString(R.string.no));
 		
+		if(mToogleAnim != true)
+			this.mAnimButton.setText(getString(R.string.anim) + ": " + getString(R.string.no));
+				
 		
 		return mScene;
 	}
