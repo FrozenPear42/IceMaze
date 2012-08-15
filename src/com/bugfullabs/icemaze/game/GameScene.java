@@ -62,7 +62,7 @@ public class GameScene extends Scene{
 		if(mSprites[column][row] != null)
 			this.detachChild(mSprites[column][row][0]);
 		
-		 mSprites[column][row][0] = new Sprite(0, row*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
+		 mSprites[column][row][0] = new Sprite(800, row*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
 		 this.attachChild(mSprites[column][row][0]);
 		 this.sortChildren();
 		 mSprites[column][row][0].registerEntityModifier(new MoveXModifier(interval, 800 + column*32, column*32, EaseStrongIn.getInstance()));
@@ -82,7 +82,7 @@ public class GameScene extends Scene{
 
 	public void addAttsItem(int c, int r, int item, float interval){
 		
-		 mSprites[c][r][1] = new Sprite(0, r*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
+		 mSprites[c][r][1] = new Sprite(800, r*32, mTexturePack.getTexturePackTextureRegionLibrary().get(item), mActivity.getVertexBufferObjectManager());		 
 		 mSprites[c][r][1].setZIndex(1);
 		 this.attachChild(mSprites[c][r][1]);
 		 this.sortChildren();

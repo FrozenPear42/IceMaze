@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.view.KeyEvent;
 
 import com.bugfullabs.icemaze.level.Level;
@@ -143,7 +144,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		
 		this.mFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         Typeface typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
-        mFont = new StrokeFont(this.getFontManager(), mFontTexture, typeface, 30, true, Color.WHITE, 2, Color.BLACK);
+        mFont = new StrokeFont(this.getFontManager(), mFontTexture, typeface, 28, true, Color.WHITE, 2, Color.BLACK);
         
         this.mSFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
@@ -338,6 +339,8 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		*/
 
 		
+
+		
 		Sprite mBackButton = new Sprite(0, cameraHeight *2 - 72 , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
 			
 			@Override
@@ -381,6 +384,20 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		Text credits = new Text(-cameraWidth + 20, cameraHeight/2-32, this.mSFont, getString(R.string.creditstext), getVertexBufferObjectManager());
 		credits.setTextOptions(new TextOptions(HorizontalAlign.LEFT));
 		mScene.attachChild(credits);
+		
+		
+		new Button(this, mScene, -300, cameraHeight - 90, 250, 75, getString(R.string.our_apps), mButtonLongRegion, mFont){
+			@Override
+			public boolean onButtonPressed(){	
+				
+		        Intent intent = new Intent(Intent.ACTION_VIEW);
+		        intent.setData(Uri.parse("market://search?q=pub:BugfulLabs.pl"));
+		        startActivity(intent);
+
+				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+				return true;
+			}
+		};
 		
 		
 		
