@@ -1,7 +1,5 @@
 package com.bugfullabs.icemaze;
 
-import java.util.Locale;
-
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.options.EngineOptions;
@@ -72,7 +70,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	
 	private boolean mToogleSound = false;
 	private boolean mToogleMusic = false;
-	private boolean mToogleAnim = false;
+	private boolean mToogleAnim = true;
 	
 	private Button mAnimButton;
 	private Button mMusicButton;
@@ -129,7 +127,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		mSettings = getSharedPreferences(GameValues.SETTINGS_FILE, 0);
 		mEditor = mSettings.edit();
 
-		mToogleAnim = mSettings.getBoolean("anim", false);
+		mToogleAnim = mSettings.getBoolean("anim", true);
 		mToogleSound = mSettings.getBoolean("sound", false);
 		mToogleMusic = mSettings.getBoolean("music", false);		
 
@@ -221,6 +219,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 
 			mCamera.setCenter(cameraInitX+cameraWidth, cameraInitY);
 			mHud.setVisible(true);
+
 			return true;
 			}
 		};

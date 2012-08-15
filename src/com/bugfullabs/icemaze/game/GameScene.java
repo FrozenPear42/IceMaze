@@ -9,7 +9,6 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.debug.Debug;
 import org.andengine.util.modifier.ease.EaseStrongIn;
-import org.andengine.util.modifier.ease.EaseStrongOut;
 import org.andengine.util.texturepack.TexturePack;
 
 import com.bugfullabs.icemaze.level.Level;
@@ -120,31 +119,26 @@ public class GameScene extends Scene{
 
 	public void moveItems(final IOnFinishListener iOnFinishListener) {
 		
-		float interval = 0;
 		
 		Debug.i("MOVE");
 		
-		for(int i = width-1; i >= 0; i--){
-			for(int j = height-1; j >= 0; j--){
+		
+		
+		for(int i = 0; i < width; i++){
+			for(int j = 0; j < height; j++){
 				
-				interval = 0.15f ;//+ 0.005f * (i*height + j);
 
-				Debug.i("MOVEITEMS");
-				Debug.i(Float.toString(interval));
 				if(mSprites[i][j][0] != null){
-					//mSprites[i][j][0].registerEntityModifier(new MoveXModifier(interval, i*32, 800+i*32, EaseStrongOut.getInstance()));
-					mSprites[i][j][0].registerEntityModifier(new FadeOutModifier(2f));
-					Debug.i("MOVED ITEM");
+					mSprites[i][j][0].registerEntityModifier(new FadeOutModifier(1.0f));
 				}
 				if(mSprites[i][j][1] != null){
-					//mSprites[i][j][1].registerEntityModifier(new MoveXModifier(interval, i*32, 800+i*32, EaseStrongOut.getInstance()));
-					Debug.i("MOVED ATT");
+					mSprites[i][j][1].registerEntityModifier(new FadeOutModifier(1.0f));
 				}
 				
 			}
 		}
 		
-		mActivity.getEngine().registerUpdateHandler(new TimerHandler(interval, false, new ITimerCallback() {
+		mActivity.getEngine().registerUpdateHandler(new TimerHandler(1.0f, false, new ITimerCallback() {
 			
 			@Override
 			public void onTimePassed(TimerHandler pTimerHandler) {

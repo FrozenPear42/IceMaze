@@ -32,7 +32,7 @@ public interface GameValues{
 	public static final int KEY_ID = 9;
 	public static final int TELEPORTGREEN_ID = 10;
 	public static final int TELEPORTRED_ID = 11;
-	
+	public static final int CLEAN_ID = 12;
 	/* MAIN MENU */
 
 	public static final int BACK_M_ID = 0;

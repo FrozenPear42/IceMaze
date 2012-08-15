@@ -25,6 +25,8 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.StrokeFont;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.VerticalAlign;
@@ -114,6 +116,10 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	private Text mCTiles;
 	private int maxTiles;
 	private boolean isKey = false;
+	private BitmapTextureAtlas bgTextureAtlas;
+	private TextureRegion bgTextureRegion;
+	
+	private boolean isAnim = false;
 	
 	/* BASE ENGINE & GAME FUNCTIONS */
 	
@@ -159,8 +165,14 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	e.printStackTrace();
 	}
 	
+	/* BACKGROUND */
 	
-    
+	bgTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.REPEATING_BILINEAR_PREMULTIPLYALPHA);
+	bgTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(bgTextureAtlas, this, "gfx/game/bg.png", 0, 0);
+	bgTextureAtlas.load();
+	 
+	bgTextureRegion.setTextureWidth(cameraWidth);
+	bgTextureRegion.setTextureHeight(cameraHeight);
     
 	}
 
@@ -182,6 +194,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mScore = getSharedPreferences(GameValues.SCORE_FILE, 0);
 		mScoreEditor = mScore.edit();
 		
+		isAnim = mSettings.getBoolean("anim", true);
 		
 		/* STARS COUNTER */
 		starCounter = 0;
@@ -203,7 +216,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		
 		/* GAME SCENE */
-		mGameScene = LevelSceneFactory.createScene(this, level, mGameTexturePack);
+		mGameScene = LevelSceneFactory.createScene(this, level, bgTextureRegion, mGameTexturePack);
 		
 		//PAUSE BUTTON
 		mPauseButton = new Sprite(cameraWidth-32, 0, 32, 32, mMenuTextures.get(GameValues.PAUSE_ID), getVertexBufferObjectManager()){
@@ -236,7 +249,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mGameScene.attachChild(mRestartButton);
 		
 		maxTiles = level.getTiles();
-		mCTiles = new Text(32, 0, mFont, "TILES: 0/" + Integer.toString(maxTiles), 15, getVertexBufferObjectManager());
+		mCTiles = new Text(32, 0, mFont, getString(R.string.tiles) + ": 0/" + Integer.toString(maxTiles), 15, getVertexBufferObjectManager());
 		mCTiles.setZIndex(10);
 		mGameScene.attachChild(mCTiles);
 		
@@ -252,16 +265,16 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 
 		
 		//SCORES	
-		mTime = new Text(40, 120, mFont, "TIME: XX:XX", 12, getVertexBufferObjectManager());
-		mTiles = new Text(320, 120, mFont, "TILES: XXX/XXX", 15, getVertexBufferObjectManager());
-		mTextScore = new Text(40, 170, mFont, "SCORE: XXXXX", 14, getVertexBufferObjectManager());
-		mTextHighScore = new Text(320, 170, mFont, "HIGH: XXXXX", 16, getVertexBufferObjectManager());
+		mTime = new Text(40, 120, mFont, getString(R.string.time) + ": XX:XX", 12, getVertexBufferObjectManager());
+		mTiles = new Text(320, 120, mFont, getString(R.string.tiles) + ": XXX/XXX", 15, getVertexBufferObjectManager());
+		mTextScore = new Text(40, 170, mFont, getString(R.string.score) + ": XXXXX", 14, getVertexBufferObjectManager());
+		mTextHighScore = new Text(320, 170, mFont, getString(R.string.high) + ": XXXXX", 19, getVertexBufferObjectManager());
 		
 		mTime.setZIndex(12);
 		mTiles.setZIndex(12);
 		mTextScore.setZIndex(12);
 		
-		AlignedText text = new AlignedText(0, 20, mBigFont, "GREAT!", HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 100, this);
+		AlignedText text = new AlignedText(0, 20, mBigFont, getString(R.string.great), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 100, this);
 		
 		text.setZIndex(13);
 		
@@ -373,8 +386,18 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				
 				if(pSceneTouchEvent.isActionUp()){
-				nextLevel();	
-				doResume();	
+				
+					mGameScene.moveItems(new IOnFinishListener() {
+						
+						@Override
+						public void onFinish() {
+							nextLevel();	
+							
+							doResume();	
+							
+						}
+					});
+
 				}
 				return true;
 			}	
@@ -458,6 +481,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent touchEvent) {
 
+		if(level.getPlayer() == null)
+			return false;
+		
 		switch(steering){
 		
 		
@@ -640,7 +666,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				if(nfId == GameValues.ONESTEP_ID || nfId == GameValues.BLANK_ID)
 					tiles++;
 				
-				mCTiles.setText("TILES: " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
+				mCTiles.setText(getString(R.string.tiles) + ": " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
 				
 				mGameScene.addItem(col, row, nfId);
 				level.setItem(col, row, nfId);
@@ -650,7 +676,12 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				//STARS
 				if(level.getAtts(nfCol, nfRow) == GameValues.FLAME_ID){
 				level.setAtts(nfCol, nfRow, 0);
+				
+				if(isAnim)
 				mGameScene.getItem(nfCol, nfRow, 1).registerEntityModifier(new MoveModifier(0.2f, nfCol*32, (cameraWidth-32)-32*(starCounter+1), nfRow*32, 0));
+				else
+				mGameScene.getItem(nfCol, nfRow, 1).setPosition((cameraWidth-32)-32*(starCounter+1), 0);
+					
 				mGameScene.getItem(nfCol, nfRow, 1).setZIndex(10);
 				mGameScene.sortChildren();
 				starCounter++;
@@ -682,7 +713,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 								if(nfId == GameValues.ONESTEP_ID || nfId == GameValues.BLANK_ID)
 									tiles++;
 									
-								mCTiles.setText("TILES: " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
+								mCTiles.setText(getString(R.string.tiles) + ": " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
 									
 								mGameScene.addItem(col, row, nfId);
 								level.setItem(col, row, nfId);
@@ -709,6 +740,10 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		timerStarted = false;
 		
 		calculateScore();
+		
+		
+		
+		if(isAnim){
 		level.getPlayer().registerEntityModifier(new FadeOutModifier(0.2f, new IEntityModifierListener() {
 			
 			@Override
@@ -718,9 +753,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			@Override
 			public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
 
-			//TODO: MOVE OUT TILES
-			
-			
+	
 			mGameScene.moveItems(new IOnFinishListener() {
 				@Override
 				public void onFinish() {
@@ -730,7 +763,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 			}
 		}));
+		}else{
+			
+		mScoreBackground.registerEntityModifier(new MoveYModifier(2.0f, mScoreBackground.getY(), 50, EaseBackOut.getInstance()));
 
+		}
+
+		
 		time = 0;
 		tiles = 0;
 	}
@@ -756,12 +795,12 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		else
 			sec = Integer.toString(time%60);
 		
-		mTime.setText("TIME: " + min + ":" + sec);
+		mTime.setText(getString(R.string.time) + ": " + min + ":" + sec);
 		
 		get = Integer.toString(tiles);
 		max = Integer.toString(level.getTiles());
 
-		mTiles.setText("TILES: " + get + "/" + max);
+		mTiles.setText(getString(R.string.tiles) + ": " + get + "/" + max);
 		
 		float score;
 		score = ((float)tiles/(float)level.getTiles());
@@ -781,14 +820,14 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		if(mScore.getInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), 0) < (int) score){
 			mScoreEditor.putInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), (int) score);
 			mScoreEditor.commit();
-			mTextHighScore.setText("NEW HIGH SCORE");
+			mTextHighScore.setText(getString(R.string.new_high));
 		}else{
-			mTextHighScore.setText("HIGH :" + Integer.toString((int) mScore.getInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), 0)));
+			mTextHighScore.setText(getString(R.string.high) + " :" + Integer.toString((int) mScore.getInt("score" + Integer.toString(level.getLevelpackId()) + "_" + Integer.toString(level.getId()), 0)));
 		}
 		
 		
 		
-		mTextScore.setText("SCORE: " + Integer.toString((int)score));
+		mTextScore.setText(getString(R.string.score) + ": " + Integer.toString((int)score));
 		
 	}
 	
@@ -799,7 +838,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		canExit = false;
 		isKey = false;
 		starCounter = 0;
-		mCTiles.setText("TILES: 0/" + Integer.toString(maxTiles));
+		mCTiles.setText(getString(R.string.tiles) + ": 0/" + Integer.toString(maxTiles));
 		for(int i = 0; i < 3; i++){
 
 			
@@ -838,10 +877,12 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			
 			level = LevelFileReader.getLevelFromFile(GameActivity.this, "level_"+ Integer.toString(levelpackID) + "_" +  Integer.toString(levelID+1));	
 			maxTiles = level.getTiles();
-			mCTiles.setText("TILES: 0/" + Integer.toString(maxTiles));
+			mCTiles.setText(getString(R.string.tiles) + ": 0/" + Integer.toString(maxTiles));
+			if(isAnim)
+			LevelSceneFactory.redrawWithAnimations(GameActivity.this, mGameScene, level, mGameTexturePack);
+			else
 			LevelSceneFactory.redraw(GameActivity.this, mGameScene, level, mGameTexturePack);
-		
-	
+			
 			
 			}else{
 				

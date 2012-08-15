@@ -12,5 +12,10 @@
 	<string name="creditstext">© 2012 Wojciech Gruszka\nweb: http://bugfullabs.pl\ne-mail: wojciech@bugfullabs.pl</string>
 	<string name="version">0.3.1a Beta</string>
 	<string name="anim">Animacje</string>
-    
+    <string name="tiles">KRY</string>
+	<string name="score">WYNIK</string>
+	<string name="high">REKORD</string>
+	<string name="time">CZAS</string>
+	<string name="new_high">NOWY REKORD!</string>
+	<string name="great">WSPANIALE!</string>
 </resources>
