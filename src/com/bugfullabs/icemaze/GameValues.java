@@ -33,6 +33,7 @@ public interface GameValues{
 	public static final int TELEPORTGREEN_ID = 10;
 	public static final int TELEPORTRED_ID = 11;
 	public static final int CLEAN_ID = 12;
+	public static final int STABLE_ID = 13;
 	/* MAIN MENU */
 
 	public static final int BACK_M_ID = 0;
@@ -56,7 +57,7 @@ public interface GameValues{
 	
 	/* GAME VALUES */
 	
-	public static final int LEVELPACKS = 2;
+	public static final int LEVELPACKS = 3;
 	public static final int TELEPORTS = 2;
 	
 	public static final int GREEN_TELEPORT = 0;

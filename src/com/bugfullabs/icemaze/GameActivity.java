@@ -42,6 +42,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.view.Display;
 import android.view.KeyEvent;
 
 import com.bugfullabs.icemaze.game.GameScene;
@@ -121,10 +122,20 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	private boolean isAnim = false;
 	
+	
+	
+	
+	
 	/* BASE ENGINE & GAME FUNCTIONS */
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
+		
+		Display disp = getWindowManager().getDefaultDisplay();
+		
+		cameraWidth = disp.getWidth();
+		cameraHeight = disp.getHeight();
+		
 		
 		mCamera = new Camera(0, 0 , cameraWidth, cameraHeight);
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), mCamera);
@@ -586,8 +597,14 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		case GameValues.TELEPORTRED_ID:
 			id = GameValues.TELEPORTRED_ID;
 			break;
+		
 			
+		case GameValues.STABLE_ID:
+			id = GameValues.STABLE_ID;
+			break;
+		
 		}
+		
 		
 		
 		switch(dir){
@@ -839,16 +856,15 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		isKey = false;
 		starCounter = 0;
 		mCTiles.setText(getString(R.string.tiles) + ": 0/" + Integer.toString(maxTiles));
-		for(int i = 0; i < 3; i++){
 
-			
-		}
 		
 		level.getPlayer().detachSelf();
 		
 		int id = level.getId();
 		int levelpack = level.getLevelpackId();
 		level = LevelFileReader.getLevelFromFile(this, "level_" + Integer.toString(levelpack) + "_" + Integer.toString(id));
+		
+		
 		LevelSceneFactory.redraw(this, mGameScene, level, mGameTexturePack);
 		
 		
