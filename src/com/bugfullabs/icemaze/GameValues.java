@@ -42,10 +42,7 @@ public interface GameValues{
 	public static final int BUTTONSHORT_ID = 3;
 	public static final int BUTTONSHORTDONE_ID = 4;
 	public static final int BUTTONSHORTFULL_ID = 5;
-	public static final int CREDITS_ID = 6;
-	public static final int LEVELSELECT_ID = 7;
-	public static final int SETTINGS_ID = 8;
-	public static final int TITLE_ID = 9;
+
 
 	
 	/* SHARED PREFS */

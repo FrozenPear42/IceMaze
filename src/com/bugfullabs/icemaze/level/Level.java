@@ -158,9 +158,9 @@ public Level(int columns, int rows, int id, int levelpackId, String texture){
 	}
 	
 	
-	public void createPlayer(VertexBufferObjectManager vm, TextureRegion tx){
-		player = new PlayerEntity(vm, playerX*32, playerY*32, tx);
-
+	public void createPlayer(VertexBufferObjectManager vm, TextureRegion tx, int size){
+		player = new PlayerEntity(vm, playerX*size, playerY*size, tx, size);
+	  	player.setSize(size, size);
 		Debug.i(Integer.toString(player.getZIndex()));
 	}
 	

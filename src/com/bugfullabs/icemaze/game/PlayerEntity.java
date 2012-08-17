@@ -30,7 +30,7 @@ public class PlayerEntity extends Sprite{
 	private int mColumn;
 	private int mRow;
 	private boolean modifierFinished = true;
-	
+	private int size;
 	
 	public static final int DIRECTION_UP = 0;
 	public static final int DIRECTION_DOWN = 1;
@@ -38,13 +38,15 @@ public class PlayerEntity extends Sprite{
 	public static final int DIRECTION_RIGHT = 3;
 	
 
-	public PlayerEntity(VertexBufferObjectManager vm, int pX, int pY, TextureRegion tx) {
+	public PlayerEntity(VertexBufferObjectManager vm, int pX, int pY, TextureRegion tx, int siz) {
 	super(pX, pY, tx, vm);	
 	initX = pX;
 	initY = pY;
 	
-	mColumn = pX/32;
-	mRow = pY/32;
+	this.size = siz;
+	
+	mColumn = pX/size;
+	mRow = pY/size;
 	
 	}
 	
@@ -101,8 +103,8 @@ public class PlayerEntity extends Sprite{
 
 			@Override
 			public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-				mColumn = (int) (getX()/32);
-				mRow = (int) (getY()/32);
+				mColumn = (int) (getX()/size);
+				mRow = (int) (getY()/size);
 				modifierFinished = true;
 				iOnFinishListener.onFinish();
 			}
@@ -127,8 +129,8 @@ public class PlayerEntity extends Sprite{
 
 			@Override
 			public void onModifierFinished(IModifier<IEntity> pModifier, IEntity pItem) {
-				mColumn = (int) (getX()/32);
-				mRow = (int) (getY()/32);
+				mColumn = (int) (getX()/size);
+				mRow = (int) (getY()/size);
 				modifierFinished = true;
 			}
 		});
@@ -148,26 +150,26 @@ public class PlayerEntity extends Sprite{
 		
 		case DIRECTION_DOWN:
 			
-			moveTo(getX(), getY()-32, iOnFinishListener);
+			moveTo(getX(), getY()-size, iOnFinishListener);
 			
 			break;
 		
 		case DIRECTION_UP:
 			
-			moveTo(getX(), getY()+32, iOnFinishListener);
+			moveTo(getX(), getY()+size, iOnFinishListener);
 			
 			
 			break;
 			
 		case DIRECTION_LEFT:
 				
-			moveTo(getX()-32, getY(), iOnFinishListener);			
+			moveTo(getX()-size, getY(), iOnFinishListener);			
 			
 			break;
 			
 		case DIRECTION_RIGHT:
 			
-			moveTo(getX()+32, getY(), iOnFinishListener);
+			moveTo(getX()+size, getY(), iOnFinishListener);
 			
 			
 			break;
@@ -193,10 +195,10 @@ public class PlayerEntity extends Sprite{
 		Debug.d("TELEPORT: c: " + Integer.toString(c) + " r: " + Integer.toString(r));
 		
 
-		moveTo(c*32, r*32);
+		moveTo(c*size, r*size);
 		
-		mColumn = (int) (getX()/32);
-		mRow = (int) (getY()/32);
+		mColumn = (int) (getX()/size);
+		mRow = (int) (getY()/size);
 
 
 		

@@ -6,12 +6,12 @@ import org.andengine.entity.modifier.FadeInModifier;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.region.TextureRegion;
-import org.andengine.ui.activity.BaseGameActivity;
 import org.andengine.util.texturepack.TexturePack;
 import org.andengine.util.texturepack.TexturePackTextureRegionLibrary;
 
 import android.content.SharedPreferences;
 
+import com.bugfullabs.icemaze.GameActivity;
 import com.bugfullabs.icemaze.GameValues;
 import com.bugfullabs.icemaze.game.GameScene;
 
@@ -28,13 +28,18 @@ public class LevelSceneFactory{
 	
 	
 	
-	public static GameScene createScene(final BaseGameActivity a, final Level level, TextureRegion bgTextureRegion, TexturePack txPack){	
+	public static GameScene createScene(final GameActivity a, final Level level, TextureRegion bgTextureRegion, TexturePack txPack){	
 		
 			final GameScene levelScene = new GameScene(a, txPack, level);		
 			final TexturePackTextureRegionLibrary txl = txPack.getTexturePackTextureRegionLibrary();
 			
-			levelScene.setBackground(new SpriteBackground(new Sprite(0, 0, bgTextureRegion, a.getVertexBufferObjectManager())));
-	
+			//Sprite bg = new Sprite(0, 0, bgTextureRegion, a.getVertexBufferObjectManager());
+			Sprite bg = new Sprite(0, 0, bgTextureRegion, a.getVertexBufferObjectManager());
+			
+			
+			
+			levelScene.setBackground(new SpriteBackground(bg));
+			
 			float interval = 0;
 			
 			SharedPreferences settings = a.getSharedPreferences(GameValues.SETTINGS_FILE, 0);
@@ -80,7 +85,7 @@ public class LevelSceneFactory{
 				public void onTimePassed(TimerHandler pTimerHandler) {
 					level.setEndsActive(levelScene, false);
 					
-					level.createPlayer(a.getVertexBufferObjectManager(), txl.get(GameValues.PLAYER_ID));
+					level.createPlayer(a.getVertexBufferObjectManager(), txl.get(GameValues.PLAYER_ID), a.getObjSize());
 		  		  	level.getPlayer().setAlpha(0.0f);
 		  		  	level.getPlayer().attachToScene(levelScene);
 					level.getPlayer().setZIndex(2);
@@ -94,7 +99,7 @@ public class LevelSceneFactory{
 
 				level.setEndsActive(levelScene, false);
 				
-				level.createPlayer(a.getVertexBufferObjectManager(), txl.get(GameValues.PLAYER_ID));
+				level.createPlayer(a.getVertexBufferObjectManager(), txl.get(GameValues.PLAYER_ID), a.getObjSize());
 	  		  	level.getPlayer().attachToScene(levelScene);
 				level.getPlayer().setZIndex(2);
 				levelScene.sortChildren();
@@ -105,7 +110,7 @@ public class LevelSceneFactory{
 	}
 	
 	
-	public static void redraw(final BaseGameActivity a, final GameScene s, final Level l, final TexturePack tx){
+	public static void redraw(final GameActivity a, final GameScene s, final Level l, final TexturePack tx){
 		s.removeAllItems();
 		
 
@@ -126,14 +131,14 @@ public class LevelSceneFactory{
 		
 		l.setEndsActive(s, false);
 		
-		l.createPlayer(a.getVertexBufferObjectManager(), tx.getTexturePackTextureRegionLibrary().get(GameValues.PLAYER_ID));
+		l.createPlayer(a.getVertexBufferObjectManager(), tx.getTexturePackTextureRegionLibrary().get(GameValues.PLAYER_ID), a.getObjSize());
 		  	l.getPlayer().attachToScene(s);
 		l.getPlayer().setZIndex(2);
 		s.sortChildren();
 			
 	}
 		
-		public static void redrawWithAnimations(final BaseGameActivity a, final GameScene s, final Level l, final TexturePack tx){
+		public static void redrawWithAnimations(final GameActivity a, final GameScene s, final Level l, final TexturePack tx){
 			s.removeAllItems();
 			
 			float interval = 0;
@@ -165,7 +170,7 @@ public class LevelSceneFactory{
 			public void onTimePassed(TimerHandler pTimerHandler) {
 				l.setEndsActive(s, false);
 				
-				l.createPlayer(a.getVertexBufferObjectManager(), tx.getTexturePackTextureRegionLibrary().get(GameValues.PLAYER_ID));
+				l.createPlayer(a.getVertexBufferObjectManager(), tx.getTexturePackTextureRegionLibrary().get(GameValues.PLAYER_ID), a.getObjSize());
 	  		  	l.getPlayer().setAlpha(0.0f);
 	  		  	l.getPlayer().attachToScene(s);
 				l.getPlayer().setZIndex(2);

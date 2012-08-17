@@ -24,8 +24,12 @@ import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.StrokeFont;
 import org.andengine.opengl.texture.TextureOptions;
+import org.andengine.opengl.texture.atlas.TextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.atlas.bitmap.source.AssetBitmapTextureAtlasSource;
+import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
+import org.andengine.opengl.texture.bitmap.AssetBitmapTexture;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
@@ -124,6 +128,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	
 	
 	
+	private int objSize;
 	
 	
 	/* BASE ENGINE & GAME FUNCTIONS */
@@ -136,6 +141,15 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		cameraWidth = disp.getWidth();
 		cameraHeight = disp.getHeight();
 		
+		objSize = cameraWidth/25; 
+		int tmp = cameraHeight/15;
+		
+		if(objSize <= tmp){
+		}else{
+		objSize = tmp;
+		}
+			
+			
 		
 		mCamera = new Camera(0, 0 , cameraWidth, cameraHeight);
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), mCamera);
@@ -149,13 +163,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	/* FONT */
 	mFontTexture = new BitmapTextureAtlas(getTextureManager() ,256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 	Typeface typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
-    mFont = new StrokeFont(getFontManager(), mFontTexture, typeface, 26, true, Color.WHITE, 2, Color.BLACK);	
+    mFont = new StrokeFont(getFontManager(), mFontTexture, typeface, objSize, true, Color.WHITE, 2, Color.BLACK);	
 	mFontTexture.load();
     mFont.load();
 
 	mBigFontTexture = new BitmapTextureAtlas(getTextureManager() ,256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 	typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
-    mBigFont = new StrokeFont(getFontManager(), mBigFontTexture, typeface, 60, true, Color.WHITE, 2, Color.BLACK);	
+    mBigFont = new StrokeFont(getFontManager(), mBigFontTexture, typeface, objSize*2.2f, true, Color.WHITE, 2, Color.BLACK);	
 	mBigFontTexture.load();
     mBigFont.load();
     
@@ -181,9 +195,10 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	bgTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.REPEATING_BILINEAR_PREMULTIPLYALPHA);
 	bgTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(bgTextureAtlas, this, "gfx/game/bg.png", 0, 0);
 	bgTextureAtlas.load();
-	 
-	bgTextureRegion.setTextureWidth(cameraWidth);
-	bgTextureRegion.setTextureHeight(cameraHeight);
+	
+	
+	
+	bgTextureRegion.setTextureSize(cameraWidth, cameraHeight);
     
 	}
 
@@ -230,7 +245,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mGameScene = LevelSceneFactory.createScene(this, level, bgTextureRegion, mGameTexturePack);
 		
 		//PAUSE BUTTON
-		mPauseButton = new Sprite(cameraWidth-32, 0, 32, 32, mMenuTextures.get(GameValues.PAUSE_ID), getVertexBufferObjectManager()){
+		mPauseButton = new Sprite(cameraWidth-objSize, 0, objSize, objSize, mMenuTextures.get(GameValues.PAUSE_ID), getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				if(pSceneTouchEvent.isActionUp()){
@@ -245,7 +260,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mGameScene.attachChild(mPauseButton);
 		
 		//RESTART BUTTON
-		mRestartButton = new Sprite(0, 0, 32, 32, mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){
+		mRestartButton = new Sprite(0, 0, objSize, objSize, mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				if(pSceneTouchEvent.isActionUp()){
@@ -260,7 +275,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mGameScene.attachChild(mRestartButton);
 		
 		maxTiles = level.getTiles();
-		mCTiles = new Text(32, 0, mFont, getString(R.string.tiles) + ": 0/" + Integer.toString(maxTiles), 15, getVertexBufferObjectManager());
+		mCTiles = new Text(objSize, 0, mFont, getString(R.string.tiles) + ": 0/" + Integer.toString(maxTiles), 15, getVertexBufferObjectManager());
 		mCTiles.setZIndex(10);
 		mGameScene.attachChild(mCTiles);
 		
@@ -271,39 +286,66 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 		
 		/* SCORE INFO */
-		mScoreBackground = new Sprite(100, -(cameraHeight-100), cameraWidth-200, cameraHeight-100,  mMenuTextures.get(GameValues.SCOREBG_ID),getVertexBufferObjectManager());
+		
+		float height = 20 + objSize*2.2f + objSize*5 + 128 + 32; 
+		
+		mScoreBackground = new Sprite(60, -cameraHeight, cameraWidth-120, height,  mMenuTextures.get(GameValues.SCOREBG_ID),getVertexBufferObjectManager());
 		mScoreBackground.setZIndex(11);
 
 		
 		//SCORES	
-		mTime = new Text(40, 120, mFont, getString(R.string.time) + ": XX:XX", 12, getVertexBufferObjectManager());
-		mTiles = new Text(320, 120, mFont, getString(R.string.tiles) + ": XXX/XXX", 15, getVertexBufferObjectManager());
-		mTextScore = new Text(40, 170, mFont, getString(R.string.score) + ": XXXXX", 14, getVertexBufferObjectManager());
-		mTextHighScore = new Text(320, 170, mFont, getString(R.string.high) + ": XXXXX", 19, getVertexBufferObjectManager());
 		
+		/* 800x480
+		 * BG - 680x380
+		 * 
+		
+		mTime = new Text(40, 120, mFont, getString(R.string.time) + ": XX:XX", 12, getVertexBufferObjectManager());
+		mTiles = new Text(350, 120, mFont, getString(R.string.tiles) + ": XXX/XXX", 15, getVertexBufferObjectManager());
+		mTextScore = new Text(40, 170, mFont, getString(R.string.score) + ": XXXXX", 14, getVertexBufferObjectManager());
+		mTextHighScore = new Text(350, 170, mFont, getString(R.string.high) + ": XXXXX", 19, getVertexBufferObjectManager());
+		
+		*
+		*/
+		
+		/*
+		 * 1024x768
+		 * BG - 904x668
+		 * 
+		 */
+		
+
+		
+		AlignedText text = new AlignedText(0, 20, mBigFont, getString(R.string.great), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-120, 100, this);
+		
+		mTime = new Text(40, 20 + objSize*3.2f, mFont, getString(R.string.time) + ": XX:XX", 12, getVertexBufferObjectManager());
+		mTextScore = new Text(40, 20 + objSize*4.7f, mFont, getString(R.string.score) + ": XXXXX", 14, getVertexBufferObjectManager());
+		
+		//x = ;
+		//y = ;
+		mTiles = new Text(mTextScore.getWidth() + 80, 20 + objSize*3.2f, mFont, getString(R.string.tiles) + ": XXX/XXX", 15, getVertexBufferObjectManager());
+		mTextHighScore = new Text(mTextScore.getWidth() + 80, 20 + objSize*4.7f, mFont, getString(R.string.high) + ": XXXXX", 19, getVertexBufferObjectManager());
+		
+
 		mTime.setZIndex(12);
 		mTiles.setZIndex(12);
 		mTextScore.setZIndex(12);
-		
-		AlignedText text = new AlignedText(0, 20, mBigFont, getString(R.string.great), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-200, 100, this);
-		
 		text.setZIndex(13);
 		
 		
 		//BUTTONS	
-		Sprite restart = new Sprite(92, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
+		Sprite restart = new Sprite((mScoreBackground.getWidth()/2)-264, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				if(pSceneTouchEvent.isActionUp()){	
 				onGameRestart();
 				
-				mScoreBackground.registerEntityModifier(new MoveYModifier(1.7f, mScoreBackground.getY(), -(cameraHeight-100), EaseSineIn.getInstance()));
+				mScoreBackground.registerEntityModifier(new MoveYModifier(1.7f, mScoreBackground.getY(), -(cameraHeight), EaseSineIn.getInstance()));
 				}
 				return true;
 			}
 		};
 		
-		Sprite menu = new Sprite(236, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.MENU_ID), getVertexBufferObjectManager()){
+		Sprite menu = new Sprite((mScoreBackground.getWidth()/2)-64, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.MENU_ID), getVertexBufferObjectManager()){
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				
@@ -318,13 +360,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			}
 		};
 		
-		Sprite next = new Sprite(380, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.NEXT_ID), getVertexBufferObjectManager()){
+		Sprite next = new Sprite((mScoreBackground.getWidth()/2)+136, mScoreBackground.getHeight()-(128+32), mMenuTextures.get(GameValues.NEXT_ID), getVertexBufferObjectManager()){
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				
 				if(pSceneTouchEvent.isActionUp()){
 
-				mScoreBackground.registerEntityModifier(new MoveYModifier(1.7f, mScoreBackground.getY(), -(cameraHeight-100), new IEntityModifierListener() {
+				mScoreBackground.registerEntityModifier(new MoveYModifier(1.7f, mScoreBackground.getY(), -(cameraHeight), new IEntityModifierListener() {
 					@Override
 					public void onModifierStarted(IModifier<IEntity> pModifier, IEntity pItem) {
 					}
@@ -695,9 +737,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 				level.setAtts(nfCol, nfRow, 0);
 				
 				if(isAnim)
-				mGameScene.getItem(nfCol, nfRow, 1).registerEntityModifier(new MoveModifier(0.2f, nfCol*32, (cameraWidth-32)-32*(starCounter+1), nfRow*32, 0));
+				mGameScene.getItem(nfCol, nfRow, 1).registerEntityModifier(new MoveModifier(0.2f, nfCol*objSize, (cameraWidth-objSize)-objSize*(starCounter+1), nfRow*objSize, 0));
 				else
-				mGameScene.getItem(nfCol, nfRow, 1).setPosition((cameraWidth-32)-32*(starCounter+1), 0);
+				mGameScene.getItem(nfCol, nfRow, 1).setPosition((cameraWidth-objSize)-objSize*(starCounter+1), 0);
 					
 				mGameScene.getItem(nfCol, nfRow, 1).setZIndex(10);
 				mGameScene.sortChildren();
@@ -726,17 +768,18 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 							
 							@Override
 							public void onFinish() {
-							
-								if(nfId == GameValues.ONESTEP_ID || nfId == GameValues.BLANK_ID)
-									tiles++;
-									
-								mCTiles.setText(getString(R.string.tiles) + ": " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
-									
-								mGameScene.addItem(col, row, nfId);
-								level.setItem(col, row, nfId);
-								
 							}
 						});	
+						
+						if(nfId == GameValues.ONESTEP_ID || nfId == GameValues.BLANK_ID)
+							tiles++;
+							
+						mCTiles.setText(getString(R.string.tiles) + ": " + Integer.toString(tiles) + "/" + Integer.toString(maxTiles));
+							
+						mGameScene.addItem(col, row, nfId);
+						level.setItem(col, row, nfId);
+						
+						
 						}
 						break;
 						
@@ -774,7 +817,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			mGameScene.moveItems(new IOnFinishListener() {
 				@Override
 				public void onFinish() {
-				mScoreBackground.registerEntityModifier(new MoveYModifier(2.0f, mScoreBackground.getY(), 50, EaseBackOut.getInstance()));
+				mScoreBackground.registerEntityModifier(new MoveYModifier(2.0f, mScoreBackground.getY(),  (cameraHeight-mScoreBackground.getHeightScaled())/2, EaseBackOut.getInstance()));
 				}
 			});
 	
@@ -782,7 +825,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		}));
 		}else{
 			
-		mScoreBackground.registerEntityModifier(new MoveYModifier(2.0f, mScoreBackground.getY(), 50, EaseBackOut.getInstance()));
+		mScoreBackground.registerEntityModifier(new MoveYModifier(2.0f, mScoreBackground.getY(), (cameraHeight-mScoreBackground.getHeightScaled())/2, EaseBackOut.getInstance()));
 
 		}
 
@@ -892,6 +935,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		if(levelID < 15){
 			
 			level = LevelFileReader.getLevelFromFile(GameActivity.this, "level_"+ Integer.toString(levelpackID) + "_" +  Integer.toString(levelID+1));	
+			
+			if(level == null){
+				GameActivity.this.startActivity(new Intent(GameActivity.this, MainMenuActivity.class));
+				GameActivity.this.finish();
+				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+			}
+			
 			maxTiles = level.getTiles();
 			mCTiles.setText(getString(R.string.tiles) + ": 0/" + Integer.toString(maxTiles));
 			if(isAnim)
@@ -911,5 +961,17 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	}
 	
 	
+	
+	public int getCameraWidth(){
+		return cameraWidth;
+	}
+	
+	public int getCameraHeight(){
+		return cameraHeight;
+	}
+	
+	public int getObjSize(){
+		return objSize;
+	}
 	
 }

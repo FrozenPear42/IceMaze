@@ -10,7 +10,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 	<string name="creditstext">© 2012 Wojciech Gruszka\nweb: http://bugfullabs.pl\ne-mail: wojciech@bugfullabs.pl</string>
-	<string name="version">0.3.1b Beta</string>
+	<string name="version">0.3.2a Beta</string>
 	<string name="anim">Animations</string>
 	<string name="tiles">TILES</string>
 	<string name="score">SCORE</string>
@@ -19,5 +19,6 @@
 	<string name="new_high">NEW HIGH SCORE!</string>
 	<string name="great">GREAT!</string>
 	<string name="our_apps">Our Apps</string>
+	<string name="select_level">Select Level</string>
     
 </resources>

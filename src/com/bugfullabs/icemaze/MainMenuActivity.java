@@ -19,7 +19,6 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.VerticalAlign;
-import org.andengine.util.debug.Debug;
 import org.andengine.util.texturepack.TexturePack;
 import org.andengine.util.texturepack.TexturePackLoader;
 import org.andengine.util.texturepack.TexturePackTextureRegion;
@@ -30,6 +29,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.view.Display;
 import android.view.KeyEvent;
 
 import com.bugfullabs.icemaze.level.Level;
@@ -63,6 +63,9 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	private BitmapTextureAtlas mSFontTexture;
 	private StrokeFont mSFont;
 	
+	private BitmapTextureAtlas mBigFontTexture;
+	private StrokeFont mBigFont;
+	
 	private TexturePackTextureRegionLibrary mTextures;
 
 	
@@ -87,11 +90,13 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	public static final int NUMBER_OF_ITEMS = 15;
 	public static final int NUMBER_OF_ITEMS_IN_ROW = 5;
 	
-	public static final float offsetX = 84;
-	public static final float offsetY = 72;
+	public float offsetX;
+	public float offsetY;
 	
-	public static float marginX;
-	public static float marginY;
+	public float marginX;
+	public float marginY;
+	
+	public float gridButtonSize;
 	
 	private Button mGrid[][];
 	
@@ -112,18 +117,26 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	private SharedPreferences.Editor mScoreEditor;
 
 	private AlignedText levelpack;
+	private BitmapTextureAtlas mBig2FontTexture;
+	private StrokeFont mBig2Font;
 
-	
-	//private boolean isDrawingGrid = false;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		
-		cameraWidth = 800;
-		cameraHeight = 480;
+		Display disp = getWindowManager().getDefaultDisplay();
 		
-		marginX = cameraWidth/2 - ((offsetX)*(NUMBER_OF_ITEMS_IN_ROW/2));
-		marginY = cameraHeight/2 - (((offsetY)*((NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW)/2))) + offsetY + 16;
+		cameraWidth = disp.getWidth();
+		cameraHeight = disp.getHeight();
+		
+		gridButtonSize = 0.09f * cameraWidth;
+		
+		offsetX = gridButtonSize;
+		offsetY = gridButtonSize*1.1f;
+		
+		
+		marginX = cameraWidth/2 - ((gridButtonSize)*(NUMBER_OF_ITEMS_IN_ROW/2));
+		marginY = cameraHeight/2 - (((gridButtonSize)*((NUMBER_OF_ITEMS/NUMBER_OF_ITEMS_IN_ROW)/2))) + offsetY + 16;
 		
 		mSettings = getSharedPreferences(GameValues.SETTINGS_FILE, 0);
 		mEditor = mSettings.edit();
@@ -132,7 +145,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		mToogleSound = mSettings.getBoolean("sound", false);
 		mToogleMusic = mSettings.getBoolean("music", false);		
 
-		this.mCamera = new SmoothCamera(0, 0, MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight, 800, 800, 1.0f);
+		this.mCamera = new SmoothCamera(0, 0, MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight, 1000, 1000, 1.0f);
 
 		
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), this.mCamera);
@@ -144,29 +157,47 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		
 		this.mFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         Typeface typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
-        mFont = new StrokeFont(this.getFontManager(), mFontTexture, typeface, 28, true, Color.WHITE, 2, Color.BLACK);
+        mFont = new StrokeFont(this.getFontManager(), mFontTexture, typeface, cameraWidth*0.04f, true, Color.WHITE, 2, Color.BLACK);
+        
+        
+        mFontTexture.load();
+		mFont.load();
         
         this.mSFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
-        mSFont = new StrokeFont(this.getFontManager(), mSFontTexture, typeface, 36, true, Color.WHITE, 2, Color.BLACK);
+        mSFont = new StrokeFont(this.getFontManager(), mSFontTexture, typeface, cameraWidth/22, true, Color.WHITE, 2, Color.BLACK);
+        
         
         mSFontTexture.load();
         mSFont.load();
         
+        this.mBigFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 1024, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
+        mBigFont = new StrokeFont(this.getFontManager(), mBigFontTexture, typeface, cameraWidth/6.4f, true, Color.argb(255, 210, 236, 255), 2, Color.BLACK);
+        
+        
+        mBigFontTexture.load();
+        mBigFont.load();
+        
+        
+        this.mBig2FontTexture = new BitmapTextureAtlas(this.getTextureManager(), 1024, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
+        mBig2Font = new StrokeFont(this.getFontManager(), mBig2FontTexture, typeface, cameraWidth/8.5f, true, Color.argb(255, 210, 236, 255), 2, Color.BLACK);
+        
+        
+        mBig2FontTexture.load();
+        mBig2Font.load();
+        
         TexturePackLoader tpl = new TexturePackLoader(getAssets(), getTextureManager());
         try {
 		
-        	Debug.w(this.getResources().getConfiguration().locale.getCountry());
-        if(this.getResources().getConfiguration().locale.getCountry().equalsIgnoreCase("pl"))
-        mTexturePack = tpl.loadFromAsset("gfx/menu/menu_pl.xml", "gfx/menu/"); 
-        else
         mTexturePack = tpl.loadFromAsset("gfx/menu/menu.xml", "gfx/menu/");
-        	
-        
+
         mTexturePack.loadTexture();
         mTextures = mTexturePack.getTexturePackTextureRegionLibrary();
         } catch (Exception e) {
 			e.printStackTrace();
+			
 		}
         
        
@@ -182,10 +213,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
         textureRegion = mTextures.get(GameValues.BUTTONSHORTFULL_ID);
         mButtonFullRegion = TiledTextureRegion.create(mTexturePack.getTexture(), (int) textureRegion.getTextureX(), (int) textureRegion.getTextureY(), textureRegion.getSourceWidth(), textureRegion.getSourceHeight(), 2, 1);
         
-        
-     
-        mFontTexture.load();
-		mFont.load();
+       
         
 	}
 
@@ -205,15 +233,29 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		
 		
 		this.mScene = new Scene();
-		mScene.setBackground(new SpriteBackground(new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager())));
 		
-		mScene.attachChild(new Sprite(0, 0, mTextures.get(GameValues.TITLE_ID), getVertexBufferObjectManager()));
-		mScene.attachChild(new Sprite(0, cameraHeight, mTextures.get(GameValues.SETTINGS_ID), getVertexBufferObjectManager()));
+		Sprite bg = new Sprite(0, 0, mTextures.get(GameValues.BG_ID), getVertexBufferObjectManager());
+		//bg.setSize(cameraWidth, cameraHeight);
+		//bg.setSize(cameraWidth, (cameraWidth/800)*bg.getHeight());
+		bg.setWidth(cameraWidth);
+		bg.setHeight(cameraWidth/1.33333f);
+		mScene.setBackground(new SpriteBackground(bg));
 		
-		mScene.attachChild(new Text(540, 420, mSFont, getString(R.string.version), 12, getVertexBufferObjectManager()));
+		
+		mScene.attachChild(new AlignedText(0, 0, mBigFont, getString(R.string.app_name), HorizontalAlign.CENTER, VerticalAlign.TOP, cameraWidth, 120, this));
+		
+		mScene.attachChild(new AlignedText(0, cameraHeight, mBigFont, getString(R.string.options), HorizontalAlign.CENTER, VerticalAlign.TOP, cameraWidth, 120, this));
+		
+		mScene.attachChild(new AlignedText(0, cameraHeight-cameraWidth/22-10, mSFont, getString(R.string.version), HorizontalAlign.RIGHT, VerticalAlign.BOTTOM, cameraWidth-20, cameraWidth/22, this));
+		
+		
+		/* MIAN MENU */
+		
+		
+		
 		
 		/* PLAY */
-		new Button(this, mScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f, 250, 75, getString(R.string.newgame), mButtonLongRegion, mFont){
+		new Button(this, mScene, (cameraWidth*0.69f)/2, (cameraHeight*0.84f)/2, cameraWidth*0.31f, cameraHeight*0.16f, getString(R.string.newgame), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 			inStart = false;
@@ -225,8 +267,10 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			}
 		};
 		
+		
+		
 		/* SETTINGS */
-		new Button(this, mScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+75, 250, 75, getString(R.string.options), mButtonLongRegion, mFont){
+		new Button(this, mScene, (cameraWidth*0.69f)/2, (cameraHeight*1.16f)/2, cameraWidth*0.31f, cameraHeight*0.16f, getString(R.string.options), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){
 			mCamera.setCenter(cameraInitX, cameraInitY+cameraHeight);
@@ -236,7 +280,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		};
 		
 		/* CREDITS */
-		new Button(this, mScene, (cameraWidth/2)-125, (cameraHeight/2)-37.5f+150, 250, 75, getString(R.string.credits), mButtonLongRegion, mFont){
+		new Button(this, mScene, (cameraWidth*0.69f)/2, (cameraHeight*1.48f)/2, cameraWidth*0.31f, cameraHeight*0.16f, getString(R.string.credits), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 				mCamera.setCenter(cameraInitX-cameraWidth, cameraInitY);
@@ -249,7 +293,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		
 
 		
-		mMusicButton = new Button(this, mScene, 110, cameraHeight + 180, 250, 75, getString(R.string.music) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
+		mMusicButton = new Button(this, mScene, cameraWidth*0.14f, cameraHeight*1.38f, cameraWidth*0.31f, cameraHeight*0.16f, getString(R.string.music) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 				mToogleMusic = !mToogleMusic;
@@ -266,7 +310,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		};
 		
 		
-		mSoundButton = new Button(this, mScene, 110, cameraHeight+275, 250, 75, getString(R.string.sound) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
+		mSoundButton = new Button(this, mScene, cameraWidth*0.14f, cameraHeight*1.57f, cameraWidth*0.31f, cameraHeight*0.16f, getString(R.string.sound) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 				mToogleSound = !mToogleSound;
@@ -283,7 +327,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		};
 
 		
-		mAnimButton = new Button(this, mScene, 440, cameraHeight+180, 250, 75, getString(R.string.anim) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
+		mAnimButton = new Button(this, mScene, cameraWidth*0.55f, cameraHeight*1.38f, cameraWidth*0.31f, cameraHeight*0.16f, getString(R.string.anim) + ": " + getString(R.string.yes), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 				mToogleAnim = !mToogleAnim;
@@ -300,7 +344,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		};
 		
 		
-		new Button(this, mScene, 440, cameraHeight+275, 250, 75, getString(R.string.reset), mButtonLongRegion, mFont){
+		new Button(this, mScene, cameraWidth*0.55f, cameraHeight*1.57f, cameraWidth*0.31f, cameraHeight*0.16f, getString(R.string.reset), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 
@@ -326,22 +370,9 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			}
 		};
 		
-			
-	/*	
-		new Button(this, mScene, 440, cameraHeight+275, 250, 75, "Steering", mButtonLongRegion, mFont){
-			@Override
-			public boolean onButtonPressed(){	
-
-				return true;
-			}
-			
-		};
-		*/
-
 		
-
 		
-		Sprite mBackButton = new Sprite(0, cameraHeight *2 - 72 , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
+		Sprite mBackButton = new Sprite(0, cameraHeight *2 - cameraWidth*0.1f , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
 			
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
@@ -356,11 +387,12 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			
 		};
 		
+		mBackButton.setSize(cameraWidth*0.1f, cameraWidth*0.1f);
 		mScene.attachChild(mBackButton);
 		mScene.registerTouchArea(mBackButton);
 
 
-		mBackButton = new Sprite(-cameraWidth, cameraHeight - 72 , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
+		mBackButton = new Sprite(-cameraWidth, cameraHeight - cameraWidth*0.1f , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
 			
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
@@ -374,19 +406,20 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			}
 			
 		};
-		
+		mBackButton.setSize(cameraWidth*0.1f, cameraWidth*0.1f);
 		mScene.attachChild(mBackButton);
 		mScene.registerTouchArea(mBackButton);
 
+		/* XXX:CREDITS */
 		
-		
-		mScene.attachChild(new Sprite(-cameraWidth, 0, mTextures.get(GameValues.CREDITS_ID), getVertexBufferObjectManager()));
+		mScene.attachChild(new AlignedText(-cameraWidth, 0, mBigFont, getString(R.string.credits), HorizontalAlign.CENTER, VerticalAlign.TOP, cameraWidth, 120, this));
+
 		Text credits = new Text(-cameraWidth + 20, cameraHeight/2-32, this.mSFont, getString(R.string.creditstext), getVertexBufferObjectManager());
 		credits.setTextOptions(new TextOptions(HorizontalAlign.LEFT));
 		mScene.attachChild(credits);
 		
 		
-		new Button(this, mScene, -300, cameraHeight - 90, 250, 75, getString(R.string.our_apps), mButtonLongRegion, mFont){
+		new Button(this, mScene, -(cameraWidth*0.38f)-30, cameraHeight - cameraHeight*0.13f - 20, cameraWidth*0.38f, cameraHeight*0.13f, getString(R.string.our_apps), mButtonLongRegion, mFont){
 			@Override
 			public boolean onButtonPressed(){	
 				
@@ -408,7 +441,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  	levelpack = new AlignedText(0,  marginY - 96, mFont, "LEVELPACK: " + Integer.toString(levelpackId), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth, 24, this);
 	  	
   
-	  	back = new Button(this, mHud, marginX - (36 + 128) , marginY + offsetY -36, 72, 72, "-", mButtonShortRegion, mFont){
+	  	back = new Button(this, mHud, marginX - (gridButtonSize/2 + 128) , marginY + offsetY - gridButtonSize/2, gridButtonSize, gridButtonSize, "-", mButtonShortRegion, mFont){
 	  		@Override
 	  		public boolean onButtonPressed(){
 				
@@ -428,7 +461,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  	};
 	  	
 	  	
-	  	next = new Button(this, mHud,  cameraWidth - marginX - 36 + 128 , marginY + offsetY -36, 72, 72, "+", mButtonShortRegion, mFont){
+	  	next = new Button(this, mHud,  cameraWidth - marginX - gridButtonSize/2 + 128 , marginY + offsetY - gridButtonSize/2, gridButtonSize, gridButtonSize, "+", mButtonShortRegion, mFont){
 	  		@Override
 	  		public boolean onButtonPressed(){
 	  			
@@ -452,9 +485,9 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  	
 	  	
 	  	mHud.attachChild(levelpack);
-	  	mHud.attachChild(new Sprite(0, 0, mTextures.get(GameValues.LEVELSELECT_ID), getVertexBufferObjectManager()));
-	  	
-		mBackButton = new Sprite(0, cameraHeight - 72 , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
+	  	mHud.attachChild(new AlignedText(0, 0, mBig2Font, getString(R.string.select_level), HorizontalAlign.CENTER, VerticalAlign.TOP, cameraWidth, 120, this));
+		
+		mBackButton = new Sprite(0, cameraHeight - cameraWidth*0.1f , mTextures.get(GameValues.BACK_M_ID), getVertexBufferObjectManager()){
 			
 			@Override
 			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
@@ -471,7 +504,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 			}
 			
 		};
-		
+		mBackButton.setSize(cameraWidth*0.1f, cameraWidth*0.1f);
 		mHud.attachChild(mBackButton);
 		mHud.registerTouchArea(mBackButton);
 	  	
@@ -524,7 +557,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 					}
 					
 						
-					mGrid[z][i] = new Button(this, mScene, (z+1)*cameraWidth + marginX + (k * offsetX) - 36, marginY + (j * offsetY)- 36, 72, 72, Integer.toString(id),buttonRegion , mFont){
+					mGrid[z][i] = new Button(this, mScene, (z+1)*cameraWidth + marginX + (k * offsetX) - gridButtonSize/2, marginY + (j * offsetY)- gridButtonSize/2, gridButtonSize, gridButtonSize, Integer.toString(id),buttonRegion , mFont){
 		    			  @Override
 		    			  public boolean onButtonPressed(){
 		    				MainMenuActivity.this.onLevelSelected(id, levelpackId);
