@@ -157,7 +157,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 	TexturePackLoader tpl = new TexturePackLoader(getAssets(), getTextureManager());	
 		
 	/* FONT */
-	mFontTexture = new BitmapTextureAtlas(getTextureManager() ,512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+	mFontTexture = new BitmapTextureAtlas(getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 	Typeface typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
     mFont = new StrokeFont(getFontManager(), mFontTexture, typeface, objSize, true, Color.WHITE, 2, Color.BLACK);	
 	mFontTexture.load();
@@ -309,25 +309,25 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		
 
 		
-		AlignedText text = new AlignedText(0, 20, mBigFont, getString(R.string.great), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-120, 100, this);
+		AlignedText text = new AlignedText(0, cameraWidth/40, mBigFont, getString(R.string.great), HorizontalAlign.CENTER, VerticalAlign.CENTER, cameraWidth-120, 100, this);
 		
-		mTime = new Text(40, text.getHeight() + 20 + 1.5f*objSize , mFont, getString(R.string.time) + ": XX:XX", 12, getVertexBufferObjectManager());
-		mTextScore = new Text(40, text.getHeight() + 20 + 2*objSize + mTime.getHeight(), mFont, getString(R.string.score) + ": XXXXX", 14, getVertexBufferObjectManager());
+		mTime = new Text(40, text.getHeight() + cameraWidth/40 + 1.5f*objSize , mFont, getString(R.string.time) + ": XX:XX", 12, getVertexBufferObjectManager());
+		mTextScore = new Text(40, text.getHeight() + cameraWidth/40 + 2*objSize + mTime.getHeight(), mFont, getString(R.string.score) + ": XXXXX", 14, getVertexBufferObjectManager());
 		
 		//x = ;
 		//y = ;
-		mTiles = new Text(mTextScore.getLineWidthMaximum() + 60 , text.getHeight() + 20  + 1.5f*objSize, mFont, getString(R.string.tiles) + ": XXX/XXX", 15, getVertexBufferObjectManager());
-		mTextHighScore = new Text(mTextScore.getLineWidthMaximum() + 60, text.getHeight() + 20 + 2*objSize + mTime.getHeight(), mFont, getString(R.string.high) + ": XXXXX", 19, getVertexBufferObjectManager());
+		mTiles = new Text(mTextScore.getLineWidthMaximum() + 60 , text.getHeight() + cameraWidth/40  + 1.5f*objSize, mFont, getString(R.string.tiles) + ": XXX/XXX", 15, getVertexBufferObjectManager());
+		mTextHighScore = new Text(mTextScore.getLineWidthMaximum() + 60, text.getHeight() + cameraWidth/40 + 2*objSize + mTime.getHeight(), mFont, getString(R.string.high) + ": XXXXX", 19, getVertexBufferObjectManager());
 		
 		
-		float height = text.getHeight() + 20 + 2.5f*objSize + 2*mTime.getHeight() + (cameraWidth/6.25f) + 32; 
+		float height = text.getHeight() + cameraWidth/40 + 2.5f*objSize + 2*mTime.getHeight() + (cameraWidth/6.25f) + cameraWidth/25; 
 		
 		
 		if(mTextHighScore.getWidth() + mTextScore.getLineWidthMaximum() + 60 > mScoreBackground.getWidth()){
 			
-			 height = text.getHeight() + 20 + 3.0f*objSize + 3*mTime.getHeight() + (cameraWidth/6.25f) + 32; 
+			 height = text.getHeight() + cameraWidth/40 + 3.0f*objSize + 3*mTime.getHeight() + (cameraWidth/6.25f) + cameraWidth/25; 
 			
-			mTextHighScore.setPosition(40, text.getHeight() + 20 + 2.5f*objSize + 2*mTime.getHeight());
+			mTextHighScore.setPosition(40, text.getHeight() + cameraWidth/40 + 2.5f*objSize + 2*mTime.getHeight());
 		
 		}
 
@@ -340,7 +340,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 		mScoreBackground.setHeight(height);
 		
 		//BUTTONS	
-		Sprite restart = new Sprite((mScoreBackground.getWidth()/2)-((cameraWidth/6.25f)*2), mScoreBackground.getHeight()-(cameraWidth/6.25f+32), cameraWidth/6.25f, cameraWidth/6.25f, mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
+		Sprite restart = new Sprite((mScoreBackground.getWidth()/2)-((cameraWidth/6.25f)*2), mScoreBackground.getHeight()-(cameraWidth/6.25f+cameraWidth/25), cameraWidth/6.25f, cameraWidth/6.25f, mMenuTextures.get(GameValues.RESTART_ID), getVertexBufferObjectManager()){	
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				if(pSceneTouchEvent.isActionUp()){	
@@ -352,7 +352,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			}
 		};
 		
-		Sprite menu = new Sprite((mScoreBackground.getWidth()/2)-(cameraWidth/12.5f), mScoreBackground.getHeight()-(cameraWidth/6.25f+32), cameraWidth/6.25f, cameraWidth/6.25f, mMenuTextures.get(GameValues.MENU_ID), getVertexBufferObjectManager()){
+		Sprite menu = new Sprite((mScoreBackground.getWidth()/2)-(cameraWidth/12.5f), mScoreBackground.getHeight()-(cameraWidth/6.25f+cameraWidth/25), cameraWidth/6.25f, cameraWidth/6.25f, mMenuTextures.get(GameValues.MENU_ID), getVertexBufferObjectManager()){
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				
@@ -367,7 +367,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IOnMenuItemC
 			}
 		};
 		
-		Sprite next = new Sprite((mScoreBackground.getWidth()/2)+(cameraWidth/6.25f), mScoreBackground.getHeight()-(cameraWidth/6.25f+32), cameraWidth/6.25f, cameraWidth/6.25f, mMenuTextures.get(GameValues.NEXT_ID), getVertexBufferObjectManager()){
+		Sprite next = new Sprite((mScoreBackground.getWidth()/2)+(cameraWidth/6.25f), mScoreBackground.getHeight()-(cameraWidth/6.25f+cameraWidth/25), cameraWidth/6.25f, cameraWidth/6.25f, mMenuTextures.get(GameValues.NEXT_ID), getVertexBufferObjectManager()){
 			@Override
 	        public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 				
