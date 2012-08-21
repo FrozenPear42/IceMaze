@@ -145,7 +145,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 		mToogleSound = mSettings.getBoolean("sound", false);
 		mToogleMusic = mSettings.getBoolean("music", false);		
 
-		this.mCamera = new SmoothCamera(0, 0, MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight, 1000, 1000, 1.0f);
+		this.mCamera = new SmoothCamera(0, 0, MainMenuActivity.cameraWidth, MainMenuActivity.cameraHeight, 1200, 1000, 1.0f);
 
 		
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), this.mCamera);
@@ -155,23 +155,23 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	protected void onCreateResources() {
 
 		
-		this.mFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         Typeface typeface =  Typeface.createFromAsset(getAssets(), "font/FOO.ttf");
-        mFont = new StrokeFont(this.getFontManager(), mFontTexture, typeface, cameraWidth*0.04f, true, Color.WHITE, 2, Color.BLACK);
+        mFont = new StrokeFont(this.getFontManager(), mFontTexture, typeface, cameraWidth*0.039f, true, Color.WHITE, 2, Color.BLACK);
         
         
         mFontTexture.load();
 		mFont.load();
         
-        this.mSFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        this.mSFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
-        mSFont = new StrokeFont(this.getFontManager(), mSFontTexture, typeface, cameraWidth/22, true, Color.WHITE, 2, Color.BLACK);
+        mSFont = new StrokeFont(this.getFontManager(), mSFontTexture, typeface, cameraWidth/22, true, Color.WHITE, cameraWidth/400.0f, Color.BLACK);
         
         
         mSFontTexture.load();
         mSFont.load();
         
-        this.mBigFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 1024, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        this.mBigFontTexture = new BitmapTextureAtlas(this.getTextureManager(), 2048, 1024, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
         mBigFont = new StrokeFont(this.getFontManager(), mBigFontTexture, typeface, cameraWidth/6.4f, true, Color.argb(255, 210, 236, 255), 2, Color.BLACK);
         
@@ -180,7 +180,7 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
         mBigFont.load();
         
         
-        this.mBig2FontTexture = new BitmapTextureAtlas(this.getTextureManager(), 1024, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        this.mBig2FontTexture = new BitmapTextureAtlas(this.getTextureManager(), 2048, 1024, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         typeface =  Typeface.createFromAsset(getAssets(), "font/segoeprb.ttf");
         mBig2Font = new StrokeFont(this.getFontManager(), mBig2FontTexture, typeface, cameraWidth/8.5f, true, Color.argb(255, 210, 236, 255), 2, Color.BLACK);
         
@@ -469,7 +469,6 @@ public class MainMenuActivity extends SimpleBaseGameActivity{
 	  			levelpackId++;
 	  			levelpack.setText("LEVELPACK: " + Integer.toString(levelpackId));
 	  			back.setVisible(true);
-
 	  			mCamera.setCenter(cameraInitX + cameraWidth*levelpackId, mCamera.getCenterY());
 	  			
 	  			if(levelpackId >= GameValues.LEVELPACKS){
